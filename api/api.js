@@ -50,32 +50,23 @@ function testWhite(x) {
 
 // ROUTES FOR OUR API
 // =============================================================================
-var router = express.Router();              // get an instance of the express Router
 
-// test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.route('/generate/:text')
-  .get(function(req, res) {
-    res.set('Content-Type', 'image/png');
+app.get('/', function (req, res) {
+  res.set('Content-Type', 'image/png');
 
-    var text = req.params.text;
-    var wrappedText = wordWrap(text, 15);
+  var text = req.query.text;
+  var wrappedText = wordWrap(text, 15);
 
-    gm("./assets/source-image.png")
-      .font("Felt Regular.ttf", 32)
-      .drawText(10, 200, wrappedText)
-      .toBuffer(function (err, buffer)
-      {
-        res.end(buffer, 'binary');
-      });
-  })
-
-
-// more routes for our API will happen here
-
-// REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/yagami', router);
+  gm("./assets/source-image.png")
+    .font("Felt Regular.ttf", 32)
+    .drawText(10, 200, wrappedText)
+    .toBuffer(function (err, buffer)
+    {
+      res.end(buffer, 'binary');
+    });
+  });
 
 // START THE SERVER
 // =============================================================================
 app.listen(port);
+console.log("listening on " + port);
