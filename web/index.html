@@ -1,0 +1,51 @@
+<html style="overflow: hidden;">
+    <head>
+        <link rel="stylesheet" type="text/css" href="bulma.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+
+    <body>
+        <section class="hero is-fullheight is-light">
+        <div class="hero-header" style="padding: 10px; background-color: #F2E3BD;    box-shadow: 0px 0px 16px 1px #BBBBBB;">
+            <div class="container">
+            <h1 class="title">
+                    <i class="fa fa-heartbeat is-primary" aria-hidden="true"></i> <i><b>Y</b>agami</i>
+            </h1>
+            </div>
+        </div>
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <img src="./assets/img/yagami.png"/>
+                    <br><br><br><br><br><br>
+                        <hr />
+                    <div class="field has-addons">
+                    <p class="control is-expanded">
+                        <input id="input" class="input" type="text" placeholder="Enter your text!">
+                    </p>
+                    <p class="control">
+                        <a id="send" class="button" style=" background-color: #F2E3BD;">
+                        Generate!
+                        </a>
+                    </p>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-footer" style="padding: 10px; background-color: #F2E3BD;">
+                <div class="container has-text-centered">
+                        <h2>
+                            with <i class="fa fa-heart fa-lg" aria-hidden="true"></i> from <a href="https://github.com/velddev">Veld</a>
+                        </h2>
+                </div>
+            </div>
+        </section>
+    </body>
+
+    <script type="text/javascript">
+      var button = document.getElementById("send");
+      var input = document.getElementById("input");
+
+      button.onclick = function () {
+          location.href = "http://veld.one/yagami/api/generate/" + input.value;
+      };
+    </script>
+</html>
