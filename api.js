@@ -16,7 +16,7 @@ app.get('/', (req, res) =>
 	res.sendFile("docs.html", {root : __dirname});
 });
 
-app.use("/api/*", authRouter);
+//app.use("/api/*", authRouter);
 app.use(imageRouter);
 
 var port = process.env.PORT || 80;
