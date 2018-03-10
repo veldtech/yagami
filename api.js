@@ -3,9 +3,9 @@ const app			= express();
 const bodyParser	= require('body-parser');
 const fs			= require("fs");
 
-global.config = JSON.parse(fs.readFileSync("./config.json"));
+//global.config = JSON.parse(fs.readFileSync("./config.json"));
 
-const authRouter = require("./routes/auth.router");
+//const authRouter = require("./routes/auth.router");
 const imageRouter = require("./routes/images.router");
 
 app.use(bodyParser.urlencoded({ extended: true }));

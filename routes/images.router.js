@@ -155,25 +155,24 @@ router.get('/api/tohru', function (req, res)
 	try
 	{	
 		var text = req.query.text;
-		var wrappedText = wordWrap(text, 64);
+		var wrappedText = wordWrap(text, 8);
 
 		var image = gm(505, 560, "white");
 		
-		image.region(200, 200, 285, 250)
+		image.region(400, 400, 150, 100)
 			.gravity('Center')
 			.fontSize(48)
 			.font("./assets/fonts/Little Days.ttf")
 			.drawText(0, 0, wrappedText)
 			.rotate("transparent", -5);
 
-		image.gravity("undefined")
-			.region(0,0, 505, 560)
-			.draw('image over 0,0 0,0 "./assets/tohru.png');
+		image.region(505, 560).draw('image over 0,0 0,0 "./assets/tohru.png"');
 
 		image.toBuffer('PNG',function (err, buffer) 
 		{
 			if (err) {
 				res.send(err.toString());
+				console.log(err);
 			}
 			else
 			{
