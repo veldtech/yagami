@@ -1,7 +1,7 @@
-const express		= require('express');
-const router      = express.Router();
-const request		= require('request');
-const gm				= require("gm");
+const express	= require('express');
+const router    = express.Router();
+const request	= require('request');
+const gm		= require("gm");
 
 function wordWrap(str, maxWidth) {
     var newLineStr = "\n"; done = false; res = '';

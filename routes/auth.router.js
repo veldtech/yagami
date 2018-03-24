@@ -13,13 +13,13 @@ const pool = new Pool({
 
 function getUser(key, callback)
 {
-   pool.query("SELECT * from users where api_key = $1", [key], (err, r) =>
-   {
-      if(r != null)
+      pool.query("SELECT * from users where api_key = $1", [key], (err, r) =>
       {
-         callback(r.rows[0]);
-      }
-   });
+            if(r != null)
+            {
+                  callback(r.rows[0]);
+            }
+      });
 }
 
 function authorize(req, res, next)
