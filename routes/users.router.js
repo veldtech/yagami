@@ -4,6 +4,8 @@ const express   = require('express');
 const request	= require('request');
 const router    = express.Router();
 const {createCanvas, loadImage, Image} = require('canvas');
+const { Canvas } = require('canvas-constructor');
+const https = require("https");
 
 const pool = new Pool({
     user: global.config.user,
@@ -13,35 +15,48 @@ const pool = new Pool({
     port: global.config.port,
 });
 
+function loadPNG(url, callback)
+{
+    https.get(url, (resp) => {
+        resp.setEncoding('base64');
+        body = "data:" + resp.headers["content-type"] + ";base64,";
+        resp.on('data', (data) => { body += data});
+        resp.on('end', () => {
+            callback(body);
+        });
+    }).on('error', (e) => {
+        console.log(`Got error: ${e.message}`);
+    });
+}
+
 router.get('/api/user', function(req, res)
 {
-    var id = req.query.id;       
+    var id = req.query.id;     
+        
     var url = "https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-0.png";
-    var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/avatars/" + id + ".png";
+    var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + id + ".png";
 
-/*    pool.query("SELECT * from dbo.\"Users\" where \"Id\" = $1", [id], (err, r) =>
+    pool.query("SELECT * from dbo.\"Users\" where \"Id\" = $1", [id], (err, r) =>
     {
         if(r != null)
         {
-            var user = r.rows[0];*/
-            var avatar = request(avatarUrl);
+            var user = r.rows[0];
 
-            const canvas = createCanvas(512, 256)
-            const ctx = canvas.getContext('2d')
+            loadPNG(url, (background) => 
+            {
+                loadPNG(avatarUrl, (avatar) => 
+                {    
+                    var canvas = new Canvas(512, 256, "png")
+                        .addImage(background, 0, 0, 512, 256)
+                        .addImage(avatar, 25, 25, 100, 100, { radius: 45, type: "round", restore: true });
 
-            var background = new Image();
- 
+                    var buffer = canvas.toBuffer().toString('base64');
 
-            request.get(url, (err, response, body) => {
-                if(err) console.log(err);
-                background.onload = () => {
-                    ctx.drawImage(background, 0, 0, 512, 256);
                     res.set('Content-Type', 'image/png');
-                    canvas.createPNGStream().pipe(res);
-                }
-                background.src = body;
+                    res.send(canvas.toBuffer());
+                });
             });
-    /*    }
+        }
         else
         { 
             res.send(JSON.stringify({
@@ -49,7 +64,7 @@ router.get('/api/user', function(req, res)
             }));
             return;
         }
-    });*/
+    });
 });
 
 module.exports = router;
