@@ -15,15 +15,16 @@ const pool = new Pool({
 });
 
 Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
-    family: "Arial Rounded",
+    family: "Arial",
     weight: "bold"
 });
 
-Canvas.registerFont("./assets/fonts/Roboto-Light.ttf", {
-    family: "Roboto Light",
-    weight: "normal"
+Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
+    family: "Roboto",
+    weight: "light"
 });
 
+// Easy loads a png.
 function loadPNG(url, callback)
 {
     https.get(url, (resp) => {
@@ -38,6 +39,7 @@ function loadPNG(url, callback)
     });
 }
 
+// Calculates Miki level from experience
 function CalculateLevel(exp)
 {
     var experience = exp;
@@ -50,6 +52,8 @@ function CalculateLevel(exp)
     }
     return Level;
 }
+
+// Calculates Miki experience from level
 function CalculateExp(level)
 {
     var Level = 0;
@@ -69,7 +73,7 @@ router.get('/api/user', function(req, res)
     var url = "https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-0.png";
     var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + id + ".png";
 
-    var frontColor = "#000055";
+    var frontColor = "#000000";
     var backColor = "#000000";
     
     pool.query("select \"Total_Experience\" as experience, \"Name\" as name, (select count(*) + 1 from dbo.\"Users\" where \"Total_Experience\" > u.\"Total_Experience\") as rank from dbo.\"Users\" as u where \"Id\" = $1", [id], (err, r) =>
@@ -77,6 +81,9 @@ router.get('/api/user', function(req, res)
         if(r != null)
         {
             var user = r.rows[0];
+
+            var level = CalculateLevel(user.experience);
+            var expNextLevel = CalculateExp(level + 1);
 
             loadPNG(url, (background) => 
             {
@@ -88,19 +95,23 @@ router.get('/api/user', function(req, res)
                         .addRect(0, 124, 512, 50)
                         .addRect(15, 216, 512 - 30, 25)
                         .setColor(frontColor + "60")
-                        .addRect(18, 219, user.experience / CalculateExp(CalculateLevel(user.experience) + 1) * 476, 19)
-                        .setTextFont("48px Arial Rounded")
+                        .addRect(18, 219, user.experience / expNextLevel * 476, 19)
+                        .setTextFont("48px Arial")
                         .setColor(frontColor + "FF")
-                        .addText(user.name, 15, 164)
-                        .setTextFont("32px Arial Rounded")
+                        .addText(user.name, 15, 166, 512)
+                        .setTextAlign("left")
+                        .setTextFont("32px Arial")
                         .addText("LV", 15, 216)
-                        .setTextFont("42px Arial Rounded")
-                        .addText(CalculateLevel(user.experience), 60, 216)
+                        .setTextFont("42px Roboto")
+                        .addText(level, 60, 216)
                         .setTextAlign("right")
-                        .setTextFont("32px Arial Rounded")
+                        .setTextFont("32px Arial")
                         .addText("#", 512 - 15, 216)
-                        .setTextFont("42px Arial Rounded")
+                        .setTextFont("42px Roboto")
                         .addText(user.rank, 512 - 35, 216)
+                        .setTextFont("20px Roboto")
+                        .setTextAlign("center")
+                        .addText(user.experience + "/" + expNextLevel, 256, 236)
                         .addRoundImage(avatar, 10, 10, 100, 100, 50)
                         
                     res.set('Content-Type', 'image/png');
