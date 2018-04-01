@@ -5,6 +5,9 @@ const request	= require('request');
 const router    = express.Router();
 const { Canvas } = require('canvas-constructor');
 const https = require("https");
+const fs = require("fs");
+const parseString = require('xml2js').parseString;
+const util = require('util')
 
 const pool = new Pool({
     user: global.config.user,
@@ -66,21 +69,80 @@ function CalculateExp(level)
     return output;
 }
 
+router.get('/api/custom', function(req, res) {
+    var xml = fs.readFileSync("./test.xml", "utf8");
+    console.log(xml);
+    parseString(xml, function (err, result) {
+        if(err) console.log(err);
+
+        var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/121919449996460033.png"
+
+        loadPNG(avatarUrl, (avatar) => 
+        {    
+            var canvas = new Canvas(512, 256, "png")
+                .setTextFont("48px Arial")
+                .addText("Hello World", 128, 64)
+                .addImage(avatar, 30, 30, 64, 64)
+                
+            res.set('Content-Type', 'image/png');
+            res.send(canvas.toBuffer());
+        });
+    });
+});
+
+router.get('/api/ship', function(req, res) {
+    var me = req.query.me;
+    var other = req.query.other;
+    var value = req.query.value;
+
+    var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + me + ".png";    
+    var avatarUrlOther = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + other + ".png";    
+
+    loadPNG(avatarUrl, (background) => 
+    {
+        loadPNG(avatarUrlOther, (avatar) => 
+        {  
+            fs.readFile("assets/heart.png", (err, heart) => 
+            {  
+                if (err)
+                {
+                    res.send(heart);
+                    return;  
+                } 
+                var size = 50 + Math.max(0, Math.min(value, 200));
+                var fontSize = Math.round(size / 100 * 32);
+
+                var canvas = new Canvas(512, 256, "png")
+                    .addImage(background, 28, 28, 200, 200)
+                    .addImage(avatar, 284, 28, 200, 200)
+                    .addImage(heart, 256 - Math.round(size / 2), 128 - Math.round(size / 2), size, size)
+                    .setTextFont(fontSize + "px Arial")
+                    .setColor("#FFFFFF")
+                    .setTextAlign("center")
+                    .addText(value + "%", 256, 128 + 10)
+                    .setAntialiasing("subpixel");
+
+                res.set('Content-Type', 'image/png');
+                res.send(canvas.toBuffer());
+            });
+        });
+    });
+});
+
 router.get('/api/user', function(req, res)
 {
     var id = req.query.id;     
-        
-    var url = "https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-0.png";
-    var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + id + ".png";
-
-    var frontColor = "#000000";
-    var backColor = "#000000";
     
-    pool.query("select \"Total_Experience\" as experience, \"Name\" as name, (select count(*) + 1 from dbo.\"Users\" where \"Total_Experience\" > u.\"Total_Experience\") as rank from dbo.\"Users\" as u where \"Id\" = $1", [id], (err, r) =>
+    pool.query("select v.\"BackgroundColor\" as backcolor, v.\"ForegroundColor\" as forecolor, v.\"BackgroundId\" as background, u.\"Total_Experience\" as experience, u.\"Name\" as name, (select count(*) + 1 from dbo.\"Users\" where \"Total_Experience\" > u.\"Total_Experience\") as rank from dbo.\"Users\" as u left join dbo.\"ProfileVisuals\" v on u.\"Id\" = v.\"UserId\" where u.\"Id\" = $1", [id], (err, r) =>
     {
         if(r != null)
         {
             var user = r.rows[0];
+
+            var url = "https://miki-cdn.nyc3.digitaloceanspaces.com/image-profiles/backgrounds/background-" + (user.background || 0) + ".png";
+            var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/" + id + ".png";    
+            var frontColor = user.forecolor || "#000000";
+            var backColor = user.backcolor || "#000000";
 
             var level = CalculateLevel(user.experience);
             var expNextLevel = CalculateExp(level + 1);
