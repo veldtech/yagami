@@ -144,6 +144,16 @@ router.get('/api/user', function(req, res)
             var frontColor = user.forecolor || "#000000";
             var backColor = user.backcolor || "#000000";
 
+            if(!frontColor.startsWith("#"))
+            {
+                frontColor = "#" + frontColor;
+            }
+       
+            if(!backColor.startsWith("#"))
+            {
+                backColor = "#" + backColor;
+            }
+
             var level = CalculateLevel(user.experience);
             var expNextLevel = CalculateExp(level + 1);
 
