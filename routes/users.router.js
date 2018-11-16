@@ -129,7 +129,7 @@ router.get('/api/user', async (req, res) =>
         v."BackgroundId" as background, 
         u."Total_Experience" as experience, 
         u."Name" as name, 
-        (select count_estimate('select 1 from dbo."Users" where "Total_Experience" >= ' || u."Total_Experience") + 1) as rank 
+        (select "Rank" from dbo."mview_glob_rank_exp" where "Id" = $1) as rank 
         from dbo."Users" as u left join dbo."ProfileVisuals" v on u."Id" = v."UserId" where u."Id" = $1;`, [id])
     if(r != null)
     {
