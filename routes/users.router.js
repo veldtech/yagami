@@ -58,7 +58,7 @@ router.get('/api/custom', async (req, res) => {
     parseString(xml, function (err, result) {
         if(err) console.log(err);
 
-        var avatarUrl = "https://miki-cdn.nyc3.digitaloceanspaces.com/avatars/121919449996460033.png"
+        var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
 
         loadPNG(avatarUrl, (avatar) => 
         {    
@@ -80,8 +80,8 @@ router.get('/api/ship', async (req, res) => {
     var other = req.query.other;
     var value = req.query.value;
 
-    var avatarUrl = "https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/avatars/" + me + ".png";    
-    var avatarUrlOther = "https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/avatars/" + other + ".png";    
+    var avatarUrl = "https://cdn.miki.ai/avatars/" + me + ".png";    
+    var avatarUrlOther = "https://cdn.miki.ai/avatars/" + other + ".png";    
 
     var avatarMe = await axios.get(avatarUrl, {
         responseType: 'arraybuffer'
@@ -135,8 +135,8 @@ router.get('/api/user', async (req, res) =>
     {
         var user = r.rows[0];
 
-        var url = "https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/image-profiles/backgrounds/background-" + (user.background || 0) + ".png";
-        var avatarUrl = "https://miki-cdn.nyc3.cdn.digitaloceanspaces.com/avatars/" + id + ".png";    
+        var url = "https://cdn.miki.ai/image-profiles/backgrounds/background-" + (user.background || 0) + ".png";
+        var avatarUrl = "https://cdn.miki.ai/avatars/" + id + ".png";    
         var frontColor = user.forecolor || "#000000";
         var backColor = user.backcolor || "#000000";
 
