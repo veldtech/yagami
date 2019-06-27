@@ -84,18 +84,21 @@ router.get('/api/ship', async (req, res) => {
     var avatarUrlOther = "https://cdn.miki.ai/avatars/" + other + ".png";    
 
     var avatarMe = await axios.get(avatarUrl, {
+        headers: {
+            "cache": "no-cache"
+        },
         responseType: 'arraybuffer'
-      });
+    });
 
+    let avatarOther = avatarMe;
     if(avatarUrlOther != avatarUrl)
     {
         avatarOther = await axios.get(avatarUrlOther, {
+            headers: {
+                "cache": "no-cache"
+            },
             responseType: 'arraybuffer'
-          });
-    }
-    else
-    {
-        var avatarOther = avatarMe;
+        });
     }
 
     var heart = await fs.readFile("assets/heart.png");
