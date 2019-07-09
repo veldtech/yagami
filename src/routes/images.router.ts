@@ -1,15 +1,16 @@
-const express	= require('express');
-const router    = express.Router();
-const request	= require('request');
-const gm		= require("gm");
+import { Router } from "express";
+import * as request from "request";
+import * as gm from "gm";
 
 function wordWrap(str, maxWidth) {
-    var newLineStr = "\n"; done = false; res = '';
+		let newLineStr = "\n"; 
+		let done = false; 
+		let res = '';
     do 
     {
-        found = false;
+        let found = false;
         // Inserts new line at first whitespace of the line
-        for (i = maxWidth - 1; i >= 0; i--) {
+        for (let i = maxWidth - 1; i >= 0; i--) {
             if (testWhite(str.charAt(i))) {
                 res = res + [str.slice(0, i), newLineStr].join('');
                 str = str.slice(i + 1);
@@ -30,44 +31,16 @@ function wordWrap(str, maxWidth) {
     return res + str;
 }
 
-function testWhite(x) {
+function testWhite(x: string) {
     var white = new RegExp(/^\s$/);
     return white.test(x.charAt(0));
 }
 
-function gmToBuffer (data) {
-  return new Promise((resolve, reject) => 
-  {
-	 data.stream((err, stdout, stderr) => 
-	 {
-		if (err)
-		{ 
-			return reject(err) 
-		}
-      const chunks = []
-		stdout.on('data', (chunk) => 
-		{ 
-			chunks.push(chunk) 
-		})
-
-		stdout.once('end', () => 
-		{ 
-			resolve(Buffer.concat(chunks)) 
-		})
-
-		stderr.once('data', (data) => 
-		{ 
-			reject(String(data)) 
-		})
-    })
-  })
-}
-
-router.get('/api/box', function(req, res)
+Router().get('/api/box', function(req, res)
 {
 	try
 	{
-		var url = req.query.url;
+		const url: string = req.query.url;
 
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
@@ -97,7 +70,7 @@ router.get('/api/box', function(req, res)
 	}
 });
 
-router.get('/api/yugioh', function (req, res)
+Router().get('/api/yugioh', function (req, res)
 {
 	try
 	{
@@ -124,7 +97,7 @@ router.get('/api/yugioh', function (req, res)
 	}
 });
 
-router.get('/api/disability', function (req, res)
+Router().get('/api/disability', function (req, res)
 {
 	try
 	{
@@ -150,7 +123,7 @@ router.get('/api/disability', function (req, res)
 	}
 });
 
-router.get('/api/tohru', function (req, res) 
+Router().get('/api/tohru', function (req, res) 
 {
 	try
 	{	
@@ -188,7 +161,7 @@ router.get('/api/tohru', function (req, res)
 });
 
 
-router.get('/api/yagami', function (req, res) 
+Router().get('/api/yagami', function (req, res) 
 {
 	try
 	{	
@@ -215,4 +188,4 @@ router.get('/api/yagami', function (req, res)
 	}
 });
 
-module.exports = router;
+export default Router();

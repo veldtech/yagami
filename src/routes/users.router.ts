@@ -1,18 +1,18 @@
 const { Pool }  = require('pg');
 const gm        = require("gm");
 const express   = require('express');
-const router    = express.Router();
+const Router()    = express.Router();
 const { Canvas } = require('canvas-constructor');
 const fs = require("await-fs");
 const parseString = require('xml2js').parseString;
 const axios = require('axios');
 
 const pool = new Pool({
-    user: global.config.user,
-    host: global.config.host,
-    database: global.config.database,
-    password: global.config.password,
-    port: global.config.port,
+    user: process.env.user,
+    host: process.env.host,
+    database: process.env.database,
+    password: process.env.password,
+    port: Number(process.env.port)
 });
 
 Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
@@ -52,7 +52,7 @@ function CalculateExp(level)
     return output;
 }
 
-router.get('/api/custom', async (req, res) => {
+Router().get('/api/custom', async (req, res) => {
     var xml = fs.readFileSync("./test.xml", "utf8");
     console.log(xml);
     parseString(xml, function (err, result) {
@@ -73,7 +73,7 @@ router.get('/api/custom', async (req, res) => {
     });
 });
 
-router.get('/api/ship', async (req, res) => {
+Router().get('/api/ship', async (req, res) => {
     console.time('ship');
 
     var me = req.query.me;
@@ -121,7 +121,7 @@ router.get('/api/ship', async (req, res) => {
     console.timeEnd('ship');
 });
 
-router.get('/api/user', async (req, res) =>
+Router().get('/api/user', async (req, res) =>
 {
     console.time('user');
     var id = req.query.id;     
@@ -203,4 +203,4 @@ router.get('/api/user', async (req, res) =>
     }
 });
 
-module.exports = router;
+export default Router();

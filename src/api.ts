@@ -1,13 +1,13 @@
-const express		= require('express');
-const app			= express();
-const bodyParser	= require('body-parser');
-const fs			= require("fs");
+import * as express from "express";
+const app = express()
+import * as bodyParser from "body-parser";
 
-global.config = JSON.parse(fs.readFileSync("./config.json"));
+// move to .env files
+//global.config = JSON.parse(fs.readFileSync("./config.json"));
 
 //const authRouter = require("./routes/auth.router");
-const imageRouter = require("./routes/images.router");
-const userRouter = require("./routes/users.router");
+import imageRouter from "./routes/images.router";
+import userRouter from "./routes/users.router";
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

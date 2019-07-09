@@ -1,14 +1,12 @@
-const { Pool, Client } = require('pg');
-const client = new Client();
-const express = require('express');
-const router = express.Router();
+import { Pool } from "pg";
+import { Router } from "express";
 
 const pool = new Pool({
-	 user: global.config.user,
-	 host: global.config.host,
-	 database: global.config.database,
-	 password: global.config.password,
-	 port: global.config.port,
+	 user: process.env.user,
+	 host: process.env.host,
+	 database: process.env.database,
+	 password: process.env.password,
+	 port: Number(process.env.port)
 });
 
 function getUser(key, callback)
@@ -55,6 +53,6 @@ function authorize(req, res, next)
    }
 }
 
-router.use(authorize);
+Router().use(authorize);
 
-module.exports = router;
+export default Router();
