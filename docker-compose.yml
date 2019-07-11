@@ -4,5 +4,5 @@ services:
     image: "veld/yagami"
     build: .
     command: yarn build & yarn start
-    env_file: ./config/.env
+    env_file: .env
     network_mode: "host"
