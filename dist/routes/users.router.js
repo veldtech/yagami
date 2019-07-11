@@ -36,27 +36,25 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 exports.__esModule = true;
-var Pool = require('pg').Pool;
-var gm = require("gm");
-var express = require('express');
-var Router;
-() = express.Router();
-var Canvas = require('canvas-constructor').Canvas;
-var fs = require("await-fs");
-var parseString = require('xml2js').parseString;
-var axios = require('axios');
-var pool = new Pool({
+var pg_1 = require("pg");
+var express_1 = require("express");
+var canvas_constructor_1 = require("canvas-constructor");
+var fs = require("fs");
+var AsyncFs = require("fs-nextra");
+var xml2js_1 = require("xml2js");
+var axios_1 = require("axios");
+var pool = new pg_1.Pool({
     user: process.env.user,
     host: process.env.host,
     database: process.env.database,
     password: process.env.password,
     port: Number(process.env.port)
 });
-Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
+canvas_constructor_1.Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
     family: "Arial",
     weight: "bold"
 });
-Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
+canvas_constructor_1.Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
     family: "Roboto",
     weight: "light"
 });
@@ -79,17 +77,17 @@ function CalculateExp(level) {
     } while (Level < level);
     return output;
 }
-Router().get('/api/custom', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+express_1.Router().get('/api/custom', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var xml;
     return __generator(this, function (_a) {
         xml = fs.readFileSync("./test.xml", "utf8");
         console.log(xml);
-        parseString(xml, function (err, result) {
+        xml2js_1.parseString(xml, function (err, result) {
             if (err)
                 console.log(err);
             var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png";
             loadPNG(avatarUrl, function (avatar) {
-                var canvas = new Canvas(512, 256, "png")
+                var canvas = new canvas_constructor_1.Canvas(512, 256, "png")
                     .setTextFont("48px Arial")
                     .addText("Hello World", 128, 64)
                     .addImage(avatar, 30, 30, 64, 64);
@@ -100,7 +98,7 @@ Router().get('/api/custom', function (req, res) { return __awaiter(_this, void 0
         return [2];
     });
 }); });
-Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+express_1.Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var me, other, value, avatarUrl, avatarUrlOther, avatarMe, avatarOther, heart, size, fontSize, canvas;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -111,7 +109,7 @@ Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, 
                 value = req.query.value;
                 avatarUrl = "https://cdn.miki.ai/avatars/" + me + ".png";
                 avatarUrlOther = "https://cdn.miki.ai/avatars/" + other + ".png";
-                return [4, axios.get(avatarUrl, {
+                return [4, axios_1["default"].get(avatarUrl, {
                         headers: {
                             "cache": "no-cache"
                         },
@@ -121,7 +119,7 @@ Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, 
                 avatarMe = _a.sent();
                 avatarOther = avatarMe;
                 if (!(avatarUrlOther != avatarUrl)) return [3, 3];
-                return [4, axios.get(avatarUrlOther, {
+                return [4, axios_1["default"].get(avatarUrlOther, {
                         headers: {
                             "cache": "no-cache"
                         },
@@ -130,12 +128,12 @@ Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, 
             case 2:
                 avatarOther = _a.sent();
                 _a.label = 3;
-            case 3: return [4, fs.readFile("assets/heart.png")];
+            case 3: return [4, AsyncFs.readFile("assets/heart.png")];
             case 4:
                 heart = _a.sent();
                 size = 50 + Math.max(0, Math.min(value, 200));
                 fontSize = Math.round(size / 100 * 32);
-                canvas = new Canvas(512, 256, "png")
+                canvas = new canvas_constructor_1.Canvas(512, 256, "png")
                     .addImage(avatarMe.data, 28, 28, 200, 200)
                     .addImage(avatarOther.data, 284, 28, 200, 200)
                     .addImage(heart, 256 - Math.round(size / 2), 128 - Math.round(size / 2), size, size)
@@ -151,7 +149,7 @@ Router().get('/api/ship', function (req, res) { return __awaiter(_this, void 0, 
         }
     });
 }); });
-Router().get('/api/user', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+express_1.Router().get('/api/user', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
     var id, r, user, url, avatarUrl, frontColor, backColor, level, expNextLevel, background, avatar, canvas;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -175,17 +173,17 @@ Router().get('/api/user', function (req, res) { return __awaiter(_this, void 0, 
                 }
                 level = CalculateLevel(user.experience);
                 expNextLevel = CalculateExp(level + 1);
-                return [4, axios.get(url, {
+                return [4, axios_1["default"].get(url, {
                         responseType: 'arraybuffer'
                     })];
             case 2:
                 background = _a.sent();
-                return [4, axios.get(avatarUrl, {
+                return [4, axios_1["default"].get(avatarUrl, {
                         responseType: 'arraybuffer'
                     })];
             case 3:
                 avatar = _a.sent();
-                canvas = new Canvas(512, 256, "png")
+                canvas = new canvas_constructor_1.Canvas(512, 256, "png")
                     .addImage(background.data, 0, 0, 512, 256)
                     .setColor(backColor + "20")
                     .addRect(0, 124, 512, 50)
@@ -223,4 +221,4 @@ Router().get('/api/user', function (req, res) { return __awaiter(_this, void 0, 
         }
     });
 }); });
-exports["default"] = Router();
+exports["default"] = express_1.Router();

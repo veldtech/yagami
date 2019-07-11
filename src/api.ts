@@ -14,13 +14,13 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) =>
 {
-	res.sendFile("docs.html", {root : __dirname});
+	res.send("<body><h1>yo, more miki api</h1></body>");
 });
 
 //app.use("/api/*", authRouter);
 app.use(imageRouter);
 app.use(userRouter);
 
-var port = process.env.PORT || 80;
+const port = process.env.PORT || 80;
 
 app.listen(port);

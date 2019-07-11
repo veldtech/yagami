@@ -8,7 +8,7 @@ var users_router_1 = require("./routes/users.router");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.get('/', function (req, res) {
-    res.sendFile("docs.html", { root: __dirname });
+    res.send("<body><h1>yo, more miki api</h1></body>");
 });
 app.use(images_router_1["default"]);
 app.use(users_router_1["default"]);

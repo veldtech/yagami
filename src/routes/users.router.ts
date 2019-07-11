@@ -1,11 +1,10 @@
-const { Pool }  = require('pg');
-const gm        = require("gm");
-const express   = require('express');
-const Router()    = express.Router();
-const { Canvas } = require('canvas-constructor');
-const fs = require("await-fs");
-const parseString = require('xml2js').parseString;
-const axios = require('axios');
+import { Pool } from "pg";
+import { Router } from "express";
+import { Canvas } from "canvas-constructor";
+import * as fs from "fs";
+import * as AsyncFs from "fs-nextra";
+import { parseString } from "xml2js";
+import axios from "axios";
 
 const pool = new Pool({
     user: process.env.user,
@@ -26,7 +25,7 @@ Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
 });
 
 // Calculates Miki level from experience
-function CalculateLevel(exp)
+function CalculateLevel(exp : number)
 {
     var experience = exp;
     var Level = 0;
@@ -40,7 +39,7 @@ function CalculateLevel(exp)
 }
 
 // Calculates Miki experience from level
-function CalculateExp(level)
+function CalculateExp(level: number)
 {
     var Level = 0;
     var output = 0;
@@ -60,8 +59,10 @@ Router().get('/api/custom', async (req, res) => {
 
         var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
 
+        //@ts-ignore
         loadPNG(avatarUrl, (avatar) => 
-        {    
+        {
+            //@ts-ignore
             var canvas = new Canvas(512, 256, "png")
                 .setTextFont("48px Arial")
                 .addText("Hello World", 128, 64)
@@ -101,11 +102,12 @@ Router().get('/api/ship', async (req, res) => {
         });
     }
 
-    var heart = await fs.readFile("assets/heart.png");
+    const heart = await AsyncFs.readFile("assets/heart.png")
 
     var size = 50 + Math.max(0, Math.min(value, 200));
     var fontSize = Math.round(size / 100 * 32);
 
+    //@ts-ignore
     var canvas = new Canvas(512, 256, "png")
         .addImage(avatarMe.data, 28, 28, 200, 200)
         .addImage(avatarOther.data, 284, 28, 200, 200)
@@ -164,6 +166,7 @@ Router().get('/api/user', async (req, res) =>
             responseType: 'arraybuffer'
         });
 
+        //@ts-ignore
         var canvas = new Canvas(512, 256, "png")
             .addImage(background.data, 0, 0, 512, 256)
             .setColor(backColor + "20")

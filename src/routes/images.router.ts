@@ -1,8 +1,8 @@
 import { Router } from "express";
-import * as request from "request";
 import * as gm from "gm";
+import axios from "axios";
 
-function wordWrap(str, maxWidth) {
+function wordWrap(str: string, maxWidth:  number) {
 		let newLineStr = "\n"; 
 		let done = false; 
 		let res = '';
@@ -36,7 +36,7 @@ function testWhite(x: string) {
     return white.test(x.charAt(0));
 }
 
-Router().get('/api/box', function(req, res)
+Router().get('/api/box', async function(req, res)
 {
 	try
 	{
@@ -44,14 +44,16 @@ Router().get('/api/box', function(req, res)
 
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
-				
-		var image = gm(request(url))
+		
+		const response = await axios.get<string>(url)
+
+		var image = gm(response.data)
 			.resize(190, 190, "!")
 			.rotate("black", 28)
 			.extent(600, 399)
 			.roll(350, 100)
 
-		image.draw(['image over 0,0 0,0 "./assets/box.png"'])
+		image.draw('image over 0,0 0,0 "./assets/box.png"')
 
 		image.font("./assets/fonts/Felt Regular.ttf", 24)
 			.drawText(50, 275, wrappedText);
@@ -70,19 +72,21 @@ Router().get('/api/box', function(req, res)
 	}
 });
 
-Router().get('/api/yugioh', function (req, res)
+Router().get('/api/yugioh', async function (req, res)
 {
 	try
 	{
 		var url = req.query.url;
+
+		const response = await axios.get<string>(url)
 		
-		var image = gm(request(url))
+		var image = gm(response.data)
 			.rotate('white', -10)
 			.coalesce()
 			.resize(280, 280, "!")
 			.extent(480, 768, "-5+25")
 		
-		image.draw(['image over 0,0 0,0 "./assets/heartofthecard.png"'])
+		image.draw('image over 0,0 0,0 "./assets/heartofthecard.png"')
 
 		image.toBuffer('PNG',function (err, buffer) 
 		{
@@ -97,18 +101,20 @@ Router().get('/api/yugioh', function (req, res)
 	}
 });
 
-Router().get('/api/disability', function (req, res)
+Router().get('/api/disability', async function (req, res)
 {
 	try
 	{
 		var url = req.query.url;
+
+		const response = await axios.get<string>(url)
 		
-		var image = gm(request(url))
+		var image = gm(response.data)
 			.coalesce()
 			.resize(100, 100, "!")
 			.extent(467, 397, "-320-180")
 		
-		image.draw(['image over 0,0 0,0 "./assets/disability.png"'])
+		image.draw('image over 0,0 0,0 "./assets/disability.png"')
 
 		image.toBuffer('PNG',function (err, buffer) 
 		{
