@@ -52,7 +52,7 @@ function CalculateExp(level: number)
 }
 
 Router().get('/api/custom', async (req, res) => {
-    var xml = fs.readFileSync("./test.xml", "utf8");
+    var xml = fs.readFileSync("../../test.xml", "utf8");
     console.log(xml);
     parseString(xml, function (err, result) {
         if(err) console.log(err);
