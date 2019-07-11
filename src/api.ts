@@ -3,7 +3,7 @@ const app = express()
 import * as bodyParser from "body-parser";
 import * as dotenv from "dotenv";
 dotenv.config({
-	path: "./.env",
+	path: "../.env",
 	encoding: "utf8"
 })
 
