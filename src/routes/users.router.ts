@@ -7,11 +7,11 @@ import { parseString } from "xml2js";
 import axios from "axios";
 
 const pool = new Pool({
-    user: process.env.user,
-    host: process.env.host,
-    database: process.env.database,
-    password: process.env.password,
-    port: Number(process.env.port)
+    user: process.env.DATABAE_USER,
+    host: process.env.DATABAE_HOST,
+    database: process.env.DATABAE_DATABASE,
+    password: process.env.DATABAE_PASSWORD,
+    port: Number(process.env.DATABAE_PORT)
 });
 
 Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
