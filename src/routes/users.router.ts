@@ -51,7 +51,7 @@ function CalculateExp(level: number)
     return output;
 }
 
-Router().get('/api/custom', async (req, res) => {
+Router().get("/api/custom", async (req, res) => {
     var xml = fs.readFileSync("../../test.xml", "utf8");
     console.log(xml);
     parseString(xml, async function (err, result) {
@@ -68,14 +68,14 @@ Router().get('/api/custom', async (req, res) => {
                 .addText("Hello World", 128, 64)
                 .addImage(avatar, 30, 30, 64, 64)
                 
-            res.set('Content-Type', 'image/png');
+            res.set("Content-Type", "image/png");
             res.send(canvas.toBuffer());
         });
     });
 });
 
-Router().get('/api/ship', async (req, res) => {
-    console.time('ship');
+Router().get("/api/ship", async (req, res) => {
+    console.time("ship");
 
     var me = req.query.me;
     var other = req.query.other;
@@ -88,7 +88,7 @@ Router().get('/api/ship', async (req, res) => {
         headers: {
             "cache": "no-cache"
         },
-        responseType: 'arraybuffer'
+        responseType: "arraybuffer"
     });
 
     let avatarOther = avatarMe;
@@ -98,7 +98,7 @@ Router().get('/api/ship', async (req, res) => {
             headers: {
                 "cache": "no-cache"
             },
-            responseType: 'arraybuffer'
+            responseType: "arraybuffer"
         });
     }
 
@@ -118,14 +118,14 @@ Router().get('/api/ship', async (req, res) => {
         .addText(value + "%", 256, 128 + 10)
         .setAntialiasing("subpixel");
 
-    res.set('Content-Type', 'image/png');
+    res.set("Content-Type", "image/png");
     res.send(canvas.toBuffer());
-    console.timeEnd('ship');
+    console.timeEnd("ship");
 });
 
-Router().get('/api/user', async (req, res) =>
+Router().get("/api/user", async (req, res) =>
 {
-    console.time('user');
+    console.time("user");
     var id = req.query.id;     
     
     var r = await pool.query(
@@ -159,11 +159,11 @@ Router().get('/api/user', async (req, res) =>
         var expNextLevel = CalculateExp(level + 1);
 
         var background = await axios.get(url, {
-            responseType: 'arraybuffer'
+            responseType: "arraybuffer"
         });
 
         var avatar = await axios.get(avatarUrl, {
-            responseType: 'arraybuffer'
+            responseType: "arraybuffer"
         });
 
         //@ts-ignore
@@ -192,9 +192,9 @@ Router().get('/api/user', async (req, res) =>
             .addText(user.experience + "/" + expNextLevel, 256, 236)
             .addRoundImage(avatar.data, 10, 10, 100, 100, 50)
             
-        res.set('Content-Type', 'image/png');
+        res.set("Content-Type", "image/png");
         res.end(canvas.toBuffer());
-        console.timeEnd('user');
+        console.timeEnd("user");
         return;
     }
     else
@@ -202,7 +202,7 @@ Router().get('/api/user', async (req, res) =>
         res.end(JSON.stringify({
             error: "User not found!"
         }));
-        console.timeEnd('user');
+        console.timeEnd("user");
     }
 });
 

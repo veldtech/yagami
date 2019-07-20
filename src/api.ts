@@ -13,7 +13,7 @@ import userRouter from "./routes/users.router";
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.get('/', (req, res) =>
+app.get("/", (req, res) =>
 {
 	res.send("<body><h1>yo, more miki api</h1></body>");
 });
