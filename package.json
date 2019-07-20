@@ -18,11 +18,11 @@
     "fs-nextra": "^0.4.5",
     "gm": "^1.23.1",
     "pg": "^7.11.0",
-    "typescript": "^3.5.3",
     "xml2js": "^0.4.19",
     "canvas": "2.5.0"
   },
   "devDependencies": {
+    "typescript": "^3.5.3",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.0",
     "@types/gm": "^1.18.3",
