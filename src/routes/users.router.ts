@@ -9,7 +9,7 @@ import axios from "axios";
 const pool = new Pool({
     user: process.env.DATABAE_USER,
     host: process.env.DATABAE_HOST,
-    database: process.env.DATABAE_DATABASE,
+    database: process.env.DATABAE,
     password: process.env.DATABAE_PASSWORD,
     port: Number(process.env.DATABAE_PORT)
 });
