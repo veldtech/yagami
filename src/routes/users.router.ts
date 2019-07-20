@@ -25,7 +25,7 @@ Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
 });
 
 // Calculates Miki level from experience
-function CalculateLevel(exp : number)
+function CalculateLevel(exp: number)
 {
     var experience = exp;
     var Level = 0;
