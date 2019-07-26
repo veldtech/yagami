@@ -1,5 +1,5 @@
-# api-yagami
-meme api
+# yagami
+Image manipulation api that powers Miki's image commands (box, ship, exp, ...)
 
 ## Made possible by
 - [Body-Parser](https://github.com/expressjs/body-parser)
