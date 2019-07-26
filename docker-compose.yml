@@ -1,0 +1,8 @@
+version: '3'
+services:
+  api:
+    image: "veld/yagami"
+    build: .
+    command: yarn build & yarn start
+    env_file: .env
+    network_mode: "host"

@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+      "lib": ["esnext"],
+      "allowUnreachableCode": false,
+      "noUnusedLocals": true,
+      "outDir": "./dist",
+      "removeComments": true,
+  },
+  "include": ["src"]
+}
