@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response } from "express";
 import * as gm from "gm";
 import axios from "axios";
 
@@ -36,7 +36,7 @@ function testWhite(x: string) {
     return white.test(x.charAt(0));
 }
 
-Router().get("/api/box", async function(req, res)
+export const box = async function(req: Request , res: Response)
 {
 	try
 	{
@@ -70,9 +70,9 @@ Router().get("/api/box", async function(req, res)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/yugioh", async function (req, res)
+export const yugioh = async function (req : Request, res: Response)
 {
 	try
 	{
@@ -99,9 +99,9 @@ Router().get("/api/yugioh", async function (req, res)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/disability", async function (req, res)
+export const disability = async function (req: Request, res: Response)
 {
 	try
 	{
@@ -127,9 +127,9 @@ Router().get("/api/disability", async function (req, res)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/tohru", function (req, res) 
+export const tohru = function (req: Request, res: Response) 
 {
 	try
 	{	
@@ -164,10 +164,9 @@ Router().get("/api/tohru", function (req, res)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-
-Router().get("/api/yagami", function (req, res) 
+export const yagami = function (req: Request, res: Response) 
 {
 	try
 	{	
@@ -192,6 +191,4 @@ Router().get("/api/yagami", function (req, res)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
-
-export default Router();
+};

@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { Router } from "express";
+import { Request, Response } from "express";
 import { Canvas } from "canvas-constructor";
 import * as fs from "fs";
 import * as AsyncFs from "fs-nextra";
@@ -51,8 +51,8 @@ function CalculateExp(level: number)
     return output;
 }
 
-Router().get("/api/custom", async (req, res) => {
-    var xml = fs.readFileSync("../../test.xml", "utf8");
+export const custom = (req: Request, res: Response) => {
+    var xml = fs.readFileSync("./test.xml", "utf8");
     console.log(xml);
     parseString(xml, async function (err, result) {
         if(err) console.log(err);
@@ -72,9 +72,9 @@ Router().get("/api/custom", async (req, res) => {
             res.send(canvas.toBuffer());
         });
     });
-});
+};
 
-Router().get("/api/ship", async (req, res) => {
+export const ship = async (req: Request, res: Response) => {
     console.time("ship");
 
     var me = req.query.me;
@@ -102,7 +102,7 @@ Router().get("/api/ship", async (req, res) => {
         });
     }
 
-    const heart = await AsyncFs.readFile("assets/heart.png")
+    const heart = await AsyncFs.readFile("./assets/heart.png")
 
     var size = 50 + Math.max(0, Math.min(value, 200));
     var fontSize = Math.round(size / 100 * 32);
@@ -121,10 +121,10 @@ Router().get("/api/ship", async (req, res) => {
     res.set("Content-Type", "image/png");
     res.send(canvas.toBuffer());
     console.timeEnd("ship");
-});
+};
 
-Router().get("/api/user", async (req, res) =>
-{
+
+export const user = async (req: Request, res: Response) => {
     console.time("user");
     var id = req.query.id;     
     
@@ -204,6 +204,4 @@ Router().get("/api/user", async (req, res) =>
         }));
         console.timeEnd("user");
     }
-});
-
-export default Router();
+}
