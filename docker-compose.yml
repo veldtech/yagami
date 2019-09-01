@@ -5,4 +5,5 @@ services:
     build: .
     command: yarn build & yarn start
     env_file: .env
-    network_mode: "host"
+    ports:
+      - "8000:8000"
