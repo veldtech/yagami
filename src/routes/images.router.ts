@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import * as gm from "gm";
-import axios from "axios";
+import gm from "gm";
+import request from "request"
 
 function wordWrap(str: string, maxWidth:  number) {
 		let newLineStr = "\n"; 
@@ -45,9 +45,8 @@ export const box = async function(req: Request , res: Response)
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 		
-		const response = await axios.get<string>(url)
-
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.resize(190, 190, "!")
 			.rotate("black", 28)
 			.extent(600, 399)
@@ -80,9 +79,8 @@ export const yugioh = async function (req : Request, res: Response)
 	{
 		var url = req.query.url;
 
-		const response = await axios.get<string>(url)
-		
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.rotate("white", -10)
 			.coalesce()
 			.resize(280, 280, "!")
@@ -110,9 +108,8 @@ export const disability = async function (req: Request, res: Response) {
 	try {
 		var url : string = req.query.url;
 
-		const response = await axios.get(url)
-		
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.coalesce()
 			.resize(100, 100, "!")
 			.extent(467, 397, "-320-180")
@@ -137,6 +134,7 @@ export const tohru = function (req: Request, res: Response) {
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 8);
 
+		//@ts-ignore
 		var image = gm(505, 560, "white");
 		
 		image.region(400, 400, 150, 100)
@@ -167,6 +165,7 @@ export const yagami = function (req: Request, res: Response) {
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 
+		//@ts-ignore
 		var image = gm("./assets/source-image.png");
 		
 		console.log(image);

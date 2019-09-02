@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 const app = express()
 import * as bodyParser from "body-parser";
 import * as imageRouter from "./routes/images.router";
@@ -21,4 +21,4 @@ app.get("/api/disability", imageRouter.disability)
 app.get("/api/tohru", imageRouter.tohru)
 app.get("/api/yagami", imageRouter.yagami)
 
-app.listen(8000);
+app.listen(8001);
