@@ -60,10 +60,12 @@ export const box = async function(req: Request , res: Response)
 
 		image.toBuffer("PNG",function (err, buffer) 
 		{
-			if (err) res.send(err.toString());
-
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+			if (err) { 
+				res.send(err.toString()) 
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
 	}
 	catch(error)
@@ -90,9 +92,12 @@ export const yugioh = async function (req : Request, res: Response)
 
 		image.toBuffer("PNG",function (err, buffer) 
 		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
 	}
 	catch(error)
@@ -101,13 +106,11 @@ export const yugioh = async function (req : Request, res: Response)
 	}
 };
 
-export const disability = async function (req: Request, res: Response)
-{
-	try
-	{
-		var url = req.query.url;
+export const disability = async function (req: Request, res: Response) {
+	try {
+		var url : string = req.query.url;
 
-		const response = await axios.get<string>(url)
+		const response = await axios.get(url)
 		
 		var image = gm(response.data)
 			.coalesce()
@@ -116,23 +119,21 @@ export const disability = async function (req: Request, res: Response)
 		
 		image.draw("image over 0,0 0,0 \"./assets/disability.png\"")
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+		image.toBuffer("PNG",function (err, buffer) {
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
 };
 
-export const tohru = function (req: Request, res: Response) 
-{
-	try
-	{	
+export const tohru = function (req: Request, res: Response) {
+	try {	
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 8);
 
@@ -147,29 +148,22 @@ export const tohru = function (req: Request, res: Response)
 
 		image.region(505, 560).draw("image over 0,0 0,0 \"./assets/tohru.png\"");
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
+		image.toBuffer("PNG",function (err, buffer) {
 			if (err) {
 				res.send(err.toString());
 				console.log(err);
-			}
-			else
-			{
+			} else {
 				res.set("Content-Type", "image/png");
 				res.send(buffer);
 			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
 };
 
-export const yagami = function (req: Request, res: Response) 
-{
-	try
-	{	
+export const yagami = function (req: Request, res: Response) {
+	try {	
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 
@@ -180,15 +174,15 @@ export const yagami = function (req: Request, res: Response)
 		image.font("./assets/fonts/Felt Regular.ttf", 32)
 			.drawText(10, 200, wrappedText);
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+		image.toBuffer("PNG",function (err, buffer) {
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
 };

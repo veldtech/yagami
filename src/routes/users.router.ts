@@ -1,8 +1,7 @@
 import { Pool } from "pg";
 import { Request, Response } from "express";
 import { Canvas } from "canvas-constructor";
-import * as fs from "fs";
-import * as AsyncFs from "fs-nextra";
+import { promises as fs  } from "fs";
 import { parseString } from "xml2js";
 import axios from "axios";
 
@@ -52,7 +51,7 @@ function CalculateExp(level: number)
 }
 
 export const custom = (req: Request, res: Response) => {
-    var xml = fs.readFileSync("./test.xml", "utf8");
+    var xml = fs.readFile("./test.xml", "utf8");
     console.log(xml);
     parseString(xml, async function (err, result) {
         if(err) console.log(err);
@@ -102,7 +101,7 @@ export const ship = async (req: Request, res: Response) => {
         });
     }
 
-    const heart = await AsyncFs.readFile("./assets/heart.png")
+    const heart = await fs.readFile("./assets/heart.png")
 
     var size = 50 + Math.max(0, Math.min(value, 200));
     var fontSize = Math.round(size / 100 * 32);
