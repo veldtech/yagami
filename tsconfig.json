@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
       "lib": ["esnext"],
+      "target": "esnext",
       "allowUnreachableCode": false,
       "noUnusedLocals": true,
       "outDir": "./dist",
       "removeComments": true,
+      "module": "commonjs",
+      "types": ["axios", "canvas-constructor"]
   },
   "include": ["src"]
 }
