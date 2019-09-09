@@ -80,10 +80,7 @@ export const ship = async (req: Request, res: Response) => {
     var other = req.query.other;
     var value = req.query.value;
 
-    var avatarUrl = "https://cdn.miki.ai/avatars/" + me + ".png";    
-    var avatarUrlOther = "https://cdn.miki.ai/avatars/" + other + ".png";    
-
-    var avatarMe = await axios.get(avatarUrl, {
+    var avatarMe = await axios.get(me, {
         headers: {
             "cache": "no-cache"
         },
@@ -91,9 +88,9 @@ export const ship = async (req: Request, res: Response) => {
     });
 
     let avatarOther = avatarMe;
-    if(avatarUrlOther != avatarUrl)
+    if(other != me)
     {
-        avatarOther = await axios.get(avatarUrlOther, {
+        avatarOther = await axios.get(other, {
             headers: {
                 "cache": "no-cache"
             },

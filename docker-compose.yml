@@ -3,7 +3,7 @@ services:
   api:
     image: "veld/yagami"
     build: .
-    command: yarn build & yarn start
+    #command: yarn build & yarn start
     env_file: .env
     ports:
-      - "8000:8000"
+      - "8001:8001"
