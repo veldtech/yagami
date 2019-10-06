@@ -124,8 +124,6 @@ export const ship = async (req: Request, res: Response) => {
 };
 
 export const shipdirect = async (req: Request, res: Response) => {
-    console.time("ship");
-
     var me = req.query.me;
     var other = req.query.other;
     var value = req.query.value;

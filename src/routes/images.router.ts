@@ -148,7 +148,6 @@ export const tohru = function (req: Request, res: Response) {
 		image.toBuffer("PNG",function (err, buffer) {
 			if (err) {
 				res.send(err.toString());
-				console.log(err);
 			} else {
 				res.set("Content-Type", "image/png");
 				res.send(buffer);
