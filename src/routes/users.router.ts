@@ -50,28 +50,29 @@ function CalculateExp(level: number)
     return output;
 }
 
-export const custom = (req: Request, res: Response) => {
-    var xml = fs.readFile("./test.xml", "utf8");
-    console.log(xml);
-    parseString(xml, async function (err, result) {
-        if(err) console.log(err);
+// wil maybe be used in the future
+// export const custom = (req: Request, res: Response) => {
+//     var xml = fs.readFile("./test.xml", "utf8");
+//     console.log(xml);
+//     parseString(xml, async function (err, result) {
+//         if(err) console.log(err);
 
-        var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
+//         var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
 
-        //@ts-ignore
-        await loadPNG(avatarUrl, async (avatar) => 
-        {
-            //@ts-ignore
-            var canvas = new Canvas(512, 256, "png")
-                .setTextFont("48px Arial")
-                .addText("Hello World", 128, 64)
-                .addImage(avatar, 30, 30, 64, 64)
+//         //@ts-ignore
+//         await loadPNG(avatarUrl, async (avatar) => 
+//         {
+//             //@ts-ignore
+//             var canvas = new Canvas(512, 256, "png")
+//                 .setTextFont("48px Arial")
+//                 .addText("Hello World", 128, 64)
+//                 .addImage(avatar, 30, 30, 64, 64)
                 
-            res.set("Content-Type", "image/png");
-            res.send(canvas.toBuffer());
-        });
-    });
-};
+//             res.set("Content-Type", "image/png");
+//             res.send(canvas.toBuffer());
+//         });
+//     });
+// };
 
 export const ship = async (req: Request, res: Response) => {
     console.time("ship");
