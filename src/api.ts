@@ -8,7 +8,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/api/custom", userRouter.custom)
-app.get("/api/ship", userRouter.ship)
+app.get("/api/ship", userRouter.ship);
+app.get("/api/shipd", userRouter.shipdirect)
 app.get("/api/user", userRouter.user)
 
 app.get("/api/box", imageRouter.box)

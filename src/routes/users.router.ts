@@ -80,6 +80,55 @@ export const ship = async (req: Request, res: Response) => {
     var other = req.query.other;
     var value = req.query.value;
 
+    var avatarUrl = "https://cdn.miki.ai/avatars/" + me + ".png";    
+    var avatarUrlOther = "https://cdn.miki.ai/avatars/" + other + ".png";    
+
+    var avatarMe = await axios.get(avatarUrl, {
+        headers: {
+            "cache": "no-cache"
+        },
+        responseType: "arraybuffer"
+    });
+
+    let avatarOther = avatarMe;
+    if(avatarUrlOther != avatarUrl)
+    {
+        avatarOther = await axios.get(avatarUrlOther, {
+            headers: {
+                "cache": "no-cache"
+            },
+            responseType: "arraybuffer"
+        });
+    }
+
+    const heart = await fs.readFile("./assets/heart.png")
+
+    var size = 50 + Math.max(0, Math.min(value, 200));
+    var fontSize = Math.round(size / 100 * 32);
+
+    //@ts-ignore
+    var canvas = new Canvas(512, 256, "png")
+        .addImage(avatarMe.data, 28, 28, 200, 200)
+        .addImage(avatarOther.data, 284, 28, 200, 200)
+        .addImage(heart, 256 - Math.round(size / 2), 128 - Math.round(size / 2), size, size)
+        .setTextFont(fontSize + "px Arial")
+        .setColor("#FFFFFF")
+        .setTextAlign("center")
+        .addText(value + "%", 256, 128 + 10)
+        .setAntialiasing("subpixel");
+
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
+    console.timeEnd("ship");
+};
+
+export const shipdirect = async (req: Request, res: Response) => {
+    console.time("ship");
+
+    var me = req.query.me;
+    var other = req.query.other;
+    var value = req.query.value;
+
     var avatarMe = await axios.get(me, {
         headers: {
             "cache": "no-cache"
