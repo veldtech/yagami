@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import { Request, Response } from "express";
 import { Canvas } from "canvas-constructor";
 import { promises as fs  } from "fs";
-import { parseString } from "xml2js";
+// import { parseString } from "xml2js";
 import axios from "axios";
 
 const pool = new Pool({
