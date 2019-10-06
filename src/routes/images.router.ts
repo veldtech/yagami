@@ -134,7 +134,6 @@ export const tohru = function (req: Request, res: Response) {
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 8);
 
-		//@ts-ignore
 		var image = gm(505, 560, "white");
 		
 		image.region(400, 400, 150, 100)
@@ -165,11 +164,8 @@ export const yagami = function (req: Request, res: Response) {
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 
-		//@ts-ignore
 		var image = gm("./assets/source-image.png");
 		
-		console.log(image);
-
 		image.font("./assets/fonts/Felt Regular.ttf", 32)
 			.drawText(10, 200, wrappedText);
 
