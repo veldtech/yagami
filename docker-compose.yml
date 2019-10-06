@@ -3,6 +3,6 @@ services:
   api:
     image: "veld/yagami"
     build: .
-    command: yarn build & yarn start
     env_file: .env
-    network_mode: "host"
+    ports:
+      - "${API_PORT}:${API_PORT}"

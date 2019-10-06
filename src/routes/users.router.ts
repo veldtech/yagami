@@ -1,9 +1,8 @@
 import { Pool } from "pg";
-import { Router } from "express";
+import { Request, Response } from "express";
 import { Canvas } from "canvas-constructor";
-import * as fs from "fs";
-import * as AsyncFs from "fs-nextra";
-import { parseString } from "xml2js";
+import { promises as fs  } from "fs";
+// import { parseString } from "xml2js";
 import axios from "axios";
 
 const pool = new Pool({
@@ -51,30 +50,31 @@ function CalculateExp(level: number)
     return output;
 }
 
-Router().get("/api/custom", async (req, res) => {
-    var xml = fs.readFileSync("../../test.xml", "utf8");
-    console.log(xml);
-    parseString(xml, async function (err, result) {
-        if(err) console.log(err);
+// wil maybe be used in the future
+// export const custom = (req: Request, res: Response) => {
+//     var xml = fs.readFile("./test.xml", "utf8");
+//     console.log(xml);
+//     parseString(xml, async function (err, result) {
+//         if(err) console.log(err);
 
-        var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
+//         var avatarUrl = "https://cdn.miki.ai/avatars/121919449996460033.png"
 
-        //@ts-ignore
-        await loadPNG(avatarUrl, async (avatar) => 
-        {
-            //@ts-ignore
-            var canvas = new Canvas(512, 256, "png")
-                .setTextFont("48px Arial")
-                .addText("Hello World", 128, 64)
-                .addImage(avatar, 30, 30, 64, 64)
+//         //@ts-ignore
+//         await loadPNG(avatarUrl, async (avatar) => 
+//         {
+//             //@ts-ignore
+//             var canvas = new Canvas(512, 256, "png")
+//                 .setTextFont("48px Arial")
+//                 .addText("Hello World", 128, 64)
+//                 .addImage(avatar, 30, 30, 64, 64)
                 
-            res.set("Content-Type", "image/png");
-            res.send(canvas.toBuffer());
-        });
-    });
-});
+//             res.set("Content-Type", "image/png");
+//             res.send(canvas.toBuffer());
+//         });
+//     });
+// };
 
-Router().get("/api/ship", async (req, res) => {
+export const ship = async (req: Request, res: Response) => {
     console.time("ship");
 
     var me = req.query.me;
@@ -102,7 +102,7 @@ Router().get("/api/ship", async (req, res) => {
         });
     }
 
-    const heart = await AsyncFs.readFile("assets/heart.png")
+    const heart = await fs.readFile("./assets/heart.png")
 
     var size = 50 + Math.max(0, Math.min(value, 200));
     var fontSize = Math.round(size / 100 * 32);
@@ -121,10 +121,54 @@ Router().get("/api/ship", async (req, res) => {
     res.set("Content-Type", "image/png");
     res.send(canvas.toBuffer());
     console.timeEnd("ship");
-});
+};
 
-Router().get("/api/user", async (req, res) =>
-{
+export const shipdirect = async (req: Request, res: Response) => {
+    var me = req.query.me;
+    var other = req.query.other;
+    var value = req.query.value;
+
+    var avatarMe = await axios.get(me, {
+        headers: {
+            "cache": "no-cache"
+        },
+        responseType: "arraybuffer"
+    });
+
+    let avatarOther = avatarMe;
+    if(other != me)
+    {
+        avatarOther = await axios.get(other, {
+            headers: {
+                "cache": "no-cache"
+            },
+            responseType: "arraybuffer"
+        });
+    }
+
+    const heart = await fs.readFile("./assets/heart.png")
+
+    var size = 50 + Math.max(0, Math.min(value, 200));
+    var fontSize = Math.round(size / 100 * 32);
+
+    //@ts-ignore
+    var canvas = new Canvas(512, 256, "png")
+        .addImage(avatarMe.data, 28, 28, 200, 200)
+        .addImage(avatarOther.data, 284, 28, 200, 200)
+        .addImage(heart, 256 - Math.round(size / 2), 128 - Math.round(size / 2), size, size)
+        .setTextFont(fontSize + "px Arial")
+        .setColor("#FFFFFF")
+        .setTextAlign("center")
+        .addText(value + "%", 256, 128 + 10)
+        .setAntialiasing("subpixel");
+
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
+    console.timeEnd("ship");
+};
+
+
+export const user = async (req: Request, res: Response) => {
     console.time("user");
     var id = req.query.id;     
     
@@ -204,6 +248,4 @@ Router().get("/api/user", async (req, res) =>
         }));
         console.timeEnd("user");
     }
-});
-
-export default Router();
+}

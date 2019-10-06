@@ -1,6 +1,6 @@
-import { Router } from "express";
-import * as gm from "gm";
-import axios from "axios";
+import { Request, Response } from "express";
+import gm from "gm";
+import request from "request"
 
 function wordWrap(str: string, maxWidth:  number) {
 		let newLineStr = "\n"; 
@@ -36,7 +36,7 @@ function testWhite(x: string) {
     return white.test(x.charAt(0));
 }
 
-Router().get("/api/box", async function(req, res)
+export const box = async function(req: Request , res: Response)
 {
 	try
 	{
@@ -45,9 +45,8 @@ Router().get("/api/box", async function(req, res)
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 		
-		const response = await axios.get<string>(url)
-
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.resize(190, 190, "!")
 			.rotate("black", 28)
 			.extent(600, 399)
@@ -60,27 +59,28 @@ Router().get("/api/box", async function(req, res)
 
 		image.toBuffer("PNG",function (err, buffer) 
 		{
-			if (err) res.send(err.toString());
-
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+			if (err) { 
+				res.send(err.toString()) 
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
 	}
 	catch(error)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/yugioh", async function (req, res)
+export const yugioh = async function (req : Request, res: Response)
 {
 	try
 	{
 		var url = req.query.url;
 
-		const response = await axios.get<string>(url)
-		
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.rotate("white", -10)
 			.coalesce()
 			.resize(280, 280, "!")
@@ -90,49 +90,47 @@ Router().get("/api/yugioh", async function (req, res)
 
 		image.toBuffer("PNG",function (err, buffer) 
 		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
 	}
 	catch(error)
 	{
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/disability", async function (req, res)
-{
-	try
-	{
-		var url = req.query.url;
+export const disability = async function (req: Request, res: Response) {
+	try {
+		var url : string = req.query.url;
 
-		const response = await axios.get<string>(url)
-		
-		var image = gm(response.data)
+		//@ts-ignore
+		var image = gm(request(url))
 			.coalesce()
 			.resize(100, 100, "!")
 			.extent(467, 397, "-320-180")
 		
 		image.draw("image over 0,0 0,0 \"./assets/disability.png\"")
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+		image.toBuffer("PNG",function (err, buffer) {
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-Router().get("/api/tohru", function (req, res) 
-{
-	try
-	{	
+export const tohru = function (req: Request, res: Response) {
+	try {	
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 8);
 
@@ -147,51 +145,38 @@ Router().get("/api/tohru", function (req, res)
 
 		image.region(505, 560).draw("image over 0,0 0,0 \"./assets/tohru.png\"");
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
+		image.toBuffer("PNG",function (err, buffer) {
 			if (err) {
 				res.send(err.toString());
-				console.log(err);
-			}
-			else
-			{
+			} else {
 				res.set("Content-Type", "image/png");
 				res.send(buffer);
 			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
+};
 
-
-Router().get("/api/yagami", function (req, res) 
-{
-	try
-	{	
+export const yagami = function (req: Request, res: Response) {
+	try {	
 		var text = req.query.text;
 		var wrappedText = wordWrap(text, 15);
 
 		var image = gm("./assets/source-image.png");
 		
-		console.log(image);
-
 		image.font("./assets/fonts/Felt Regular.ttf", 32)
 			.drawText(10, 200, wrappedText);
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) res.send(err.toString());
-			res.set("Content-Type", "image/png");
-			res.send(buffer);
+		image.toBuffer("PNG",function (err, buffer) {
+			if (err) {
+				res.send(err.toString());
+			} else {
+				res.set("Content-Type", "image/png");
+				res.send(buffer);
+			}
 		});
-	}
-	catch(error)
-	{
+	} catch(error) {
 		res.send(JSON.stringify({status:500, message:error.toString()}));
 	}
-});
-
-export default Router();
+};
