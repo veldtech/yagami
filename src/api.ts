@@ -8,14 +8,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // app.get("/api/custom", userRouter.custom)
-app.get("/api/ship", userRouter.ship);
-app.get("/api/shipd", userRouter.shipdirect)
-app.get("/api/user", userRouter.user)
+app.get("/ship", userRouter.ship);
+app.get("/shipd", userRouter.shipdirect)
+app.get("/user", userRouter.user)
 
-app.get("/api/box", imageRouter.box)
-app.get("/api/yugioh", imageRouter.yugioh)
-app.get("/api/disability", imageRouter.disability)
-app.get("/api/tohru", imageRouter.tohru)
-app.get("/api/yagami", imageRouter.yagami)
+app.get("/box", imageRouter.box)
+app.get("/yugioh", imageRouter.yugioh)
+app.get("/disability", imageRouter.disability)
+app.get("/tohru", imageRouter.tohru)
+app.get("/yagami", imageRouter.yagami)
 
 app.listen(process.env.API_PORT);
