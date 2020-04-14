@@ -28,7 +28,9 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: |
-      /dist/**
+      dist/**
+      *.json
+      *.lock
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     OverWrite: true
 
