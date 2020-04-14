@@ -24,10 +24,13 @@ steps:
     yarn
     yarn build
   displayName: 'yarn install and build'
-
+  
 - task: CopyFiles@2
   inputs:
-    Contents: '/**'
+    Contents: |
+      /dist/**
+      /package.json
+      /yarn.lock
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     OverWrite: true
 
