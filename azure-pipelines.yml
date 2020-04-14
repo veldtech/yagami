@@ -28,6 +28,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     Contents: |
+      assets/**
       dist/**
       *.json
       *.lock
