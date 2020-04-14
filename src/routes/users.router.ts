@@ -87,6 +87,8 @@ export const ship = async (req: Request, res: Response) => {
   var size = 50 + Math.max(0, Math.min(value, 200));
   var fontSize = Math.round((size / 100) * 32);
 
+  // ts-ignore can be removed with https://github.com/kyranet/canvasConstructor/pull/345
+  //@ts-ignore
   var canvas = new Canvas(512, 256, "png")
     .addImage(avatarMe.data, 28, 28, 200, 200)
     .addImage(avatarOther.data, 284, 28, 200, 200)
@@ -152,6 +154,8 @@ export const user = async (req: Request, res: Response) => {
       responseType: "arraybuffer",
     });
 
+    // ts-ignore can be removed with https://github.com/kyranet/canvasConstructor/pull/345
+    // @ts-ignore
     var canvas = new Canvas(512, 256, "png")
       .addImage(background.data, 0, 0, 512, 256)
       .setColor(backColor + "20")
