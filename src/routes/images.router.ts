@@ -1,182 +1,174 @@
 import { Request, Response } from "express";
 import gm from "gm";
-import request from "request"
+import request from "request";
 
-function wordWrap(str: string, maxWidth:  number) {
-		let newLineStr = "\n"; 
-		let done = false; 
-		let res = "";
-    do 
-    {
-        let found = false;
-        // Inserts new line at first whitespace of the line
-        for (let i = maxWidth - 1; i >= 0; i--) {
-            if (testWhite(str.charAt(i))) {
-                res = res + [str.slice(0, i), newLineStr].join("");
-                str = str.slice(i + 1);
-                found = true;
-                break;
-            }
-        }
-        // Inserts new line at maxWidth position, the word is too long to wrap
-        if (!found) {
-            res += [str.slice(0, maxWidth), newLineStr].join("");
-            str = str.slice(maxWidth);
-        }
+function wordWrap(str: string, maxWidth: number) {
+  let newLineStr = "\n";
+  let done = false;
+  let res = "";
+  do {
+    let found = false;
+    // Inserts new line at first whitespace of the line
+    for (let i = maxWidth - 1; i >= 0; i--) {
+      if (testWhite(str.charAt(i))) {
+        res = res + [str.slice(0, i), newLineStr].join("");
+        str = str.slice(i + 1);
+        found = true;
+        break;
+      }
+    }
 
-        if (str.length < maxWidth)
-            done = true;
-    } while (!done);
+    // Inserts new line at maxWidth position, the word is too long to wrap
+    if (!found) {
+      res += [str.slice(0, maxWidth), newLineStr].join("");
+      str = str.slice(maxWidth);
+    }
 
-    return res + str;
+    if (str.length < maxWidth) done = true;
+  } while (!done);
+
+  return res + str;
 }
 
 function testWhite(x: string) {
-    var white = new RegExp(/^\s$/);
-    return white.test(x.charAt(0));
+  var white = new RegExp(/^\s$/);
+  return white.test(x.charAt(0));
 }
 
-export const box = async function(req: Request , res: Response)
-{
-	try
-	{
-		const url: string = req.query.url;
+export const box = async function (req: Request, res: Response) {
+  try {
+    const url: string = req.query.url;
 
-		var text = req.query.text;
-		var wrappedText = wordWrap(text, 15);
-		
-		//@ts-ignore
-		var image = gm(request(url))
-			.resize(190, 190, "!")
-			.rotate("black", 28)
-			.extent(600, 399)
-			.roll(350, 100)
+    var text = req.query.text;
+    var wrappedText = wordWrap(text, 15);
 
-		image.draw("image over 0,0 0,0 \"./assets/box.png\"")
+    //@ts-ignore
+    var image = gm(request(url))
+      .resize(190, 190, "!")
+      .rotate("black", 28)
+      .extent(600, 399)
+      .roll(350, 100);
 
-		image.font("./assets/fonts/Felt Regular.ttf", 24)
-			.drawText(50, 275, wrappedText);
+    image.draw('image over 0,0 0,0 "./assets/box.png"');
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) { 
-				res.send(err.toString()) 
-			} else {
-				res.set("Content-Type", "image/png");
-				res.send(buffer);
-			}
-		});
-	}
-	catch(error)
-	{
-		res.send(JSON.stringify({status:500, message:error.toString()}));
-	}
+    image
+      .font("./assets/fonts/Felt Regular.ttf", 24)
+      .drawText(50, 275, wrappedText);
+
+    image.toBuffer("PNG", function (err, buffer) {
+      if (err) {
+        res.send(err.toString());
+      } else {
+        res.set("Content-Type", "image/png");
+        res.send(buffer);
+      }
+    });
+  } catch (error) {
+    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+  }
 };
 
-export const yugioh = async function (req : Request, res: Response)
-{
-	try
-	{
-		var url = req.query.url;
+export const yugioh = async function (req: Request, res: Response) {
+  try {
+    var url = req.query.url;
 
-		//@ts-ignore
-		var image = gm(request(url))
-			.rotate("white", -10)
-			.coalesce()
-			.resize(280, 280, "!")
-			.extent(480, 768, "-5+25")
-		
-		image.draw("image over 0,0 0,0 \"./assets/heartofthecard.png\"")
+    //@ts-ignore
+    var image = gm(request(url))
+      .rotate("white", -10)
+      .coalesce()
+      .resize(280, 280, "!")
+      .extent(480, 768, "-5+25");
 
-		image.toBuffer("PNG",function (err, buffer) 
-		{
-			if (err) {
-				res.send(err.toString());
-			} else {
-				res.set("Content-Type", "image/png");
-				res.send(buffer);
-			}
-		});
-	}
-	catch(error)
-	{
-		res.send(JSON.stringify({status:500, message:error.toString()}));
-	}
+    image.draw('image over 0,0 0,0 "./assets/heartofthecard.png"');
+
+    image.toBuffer("PNG", function (err, buffer) {
+      if (err) {
+        res.send(err.toString());
+      } else {
+        res.set("Content-Type", "image/png");
+        res.send(buffer);
+      }
+    });
+  } catch (error) {
+    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+  }
 };
 
 export const disability = async function (req: Request, res: Response) {
-	try {
-		var url : string = req.query.url;
+  try {
+    var url: string = req.query.url;
 
-		//@ts-ignore
-		var image = gm(request(url))
-			.coalesce()
-			.resize(100, 100, "!")
-			.extent(467, 397, "-320-180")
-		
-		image.draw("image over 0,0 0,0 \"./assets/disability.png\"")
+    //@ts-ignore
+    var image = gm(request(url))
+      .coalesce()
+      .resize(100, 100, "!")
+      .extent(467, 397, "-320-180");
 
-		image.toBuffer("PNG",function (err, buffer) {
-			if (err) {
-				res.send(err.toString());
-			} else {
-				res.set("Content-Type", "image/png");
-				res.send(buffer);
-			}
-		});
-	} catch(error) {
-		res.send(JSON.stringify({status:500, message:error.toString()}));
-	}
+    image.draw('image over 0,0 0,0 "./assets/disability.png"');
+
+    image.toBuffer("PNG", function (err, buffer) {
+      if (err) {
+        res.send(err.toString());
+      } else {
+        res.set("Content-Type", "image/png");
+        res.send(buffer);
+      }
+    });
+  } catch (error) {
+    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+  }
 };
 
 export const tohru = function (req: Request, res: Response) {
-	try {	
-		var text = req.query.text;
-		var wrappedText = wordWrap(text, 8);
+  try {
+    var text = req.query.text;
+    var wrappedText = wordWrap(text, 8);
 
-		var image = gm(505, 560, "white");
-		
-		image.region(400, 400, 150, 100)
-			.gravity("Center")
-			.fontSize(48)
-			.font("./assets/fonts/Little Days.ttf")
-			.drawText(0, 0, wrappedText)
-			.rotate("transparent", -5);
+    var image = gm(505, 560, "white");
 
-		image.region(505, 560).draw("image over 0,0 0,0 \"./assets/tohru.png\"");
+    image
+      .region(400, 400, 150, 100)
+      .gravity("Center")
+      .fontSize(48)
+      .font("./assets/fonts/Little Days.ttf")
+      .drawText(0, 0, wrappedText)
+      .rotate("transparent", -5);
 
-		image.toBuffer("PNG",function (err, buffer) {
-			if (err) {
-				res.send(err.toString());
-			} else {
-				res.set("Content-Type", "image/png");
-				res.send(buffer);
-			}
-		});
-	} catch(error) {
-		res.send(JSON.stringify({status:500, message:error.toString()}));
-	}
+    image.region(505, 560).draw('image over 0,0 0,0 "./assets/tohru.png"');
+
+    image.toBuffer("PNG", function (err, buffer) {
+      if (err) {
+        res.send(err.toString());
+      } else {
+        res.set("Content-Type", "image/png");
+        res.send(buffer);
+      }
+    });
+  } catch (error) {
+    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+  }
 };
 
 export const yagami = function (req: Request, res: Response) {
-	try {	
-		var text = req.query.text;
-		var wrappedText = wordWrap(text, 15);
+  try {
+    var text = req.query.text;
+    var wrappedText = wordWrap(text, 15);
 
-		var image = gm("./assets/source-image.png");
-		
-		image.font("./assets/fonts/Felt Regular.ttf", 32)
-			.drawText(10, 200, wrappedText);
+    var image = gm("./assets/source-image.png");
 
-		image.toBuffer("PNG",function (err, buffer) {
-			if (err) {
-				res.send(err.toString());
-			} else {
-				res.set("Content-Type", "image/png");
-				res.send(buffer);
-			}
-		});
-	} catch(error) {
-		res.send(JSON.stringify({status:500, message:error.toString()}));
-	}
+    image
+      .font("./assets/fonts/Felt Regular.ttf", 32)
+      .drawText(10, 200, wrappedText);
+
+    image.toBuffer("PNG", function (err, buffer) {
+      if (err) {
+        res.send(err.toString());
+      } else {
+        res.set("Content-Type", "image/png");
+        res.send(buffer);
+      }
+    });
+  } catch (error) {
+    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+  }
 };
