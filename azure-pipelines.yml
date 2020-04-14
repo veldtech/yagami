@@ -29,8 +29,6 @@ steps:
   inputs:
     Contents: |
       /dist/**
-      /package.json
-      /yarn.lock
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
     OverWrite: true
 
