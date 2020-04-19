@@ -1,8 +1,8 @@
 import { Pool } from "pg";
 import { Request, Response } from "express";
 import { Canvas } from "canvas-constructor";
-import { promises as fs } from "fs";
 import axios from "axios";
+import { loadAssetLazyAsync } from "../asset-map";
 
 const MIKI_CDN_URL = "https://cdn.miki.ai/";
 const DISCORD_CDN_URL = "https://cdn.discordapp.com/";
@@ -53,11 +53,9 @@ function CalculateExp(level: number) {
 }
 
 function getUserAvatar(id: string, hash: Optional<string>) {
-  if (hash == null) {
-    console.log("using miki cdn");
-    return `${MIKI_CDN_URL}avatars/${id}.png`;
+  if (hash == null || hash == undefined || hash == "") {
+    return `${DISCORD_CDN_URL}embed/avatars/${Number(id) % 5}.png`;
   }
-  console.log("using discord cdn");
   return `${DISCORD_CDN_URL}avatars/${id}/${hash}.png`;
 }
 
@@ -82,8 +80,7 @@ export const ship = async (req: Request, res: Response) => {
     });
   }
 
-  const heart = await fs.readFile("./assets/heart.png");
-
+  let heart = await loadAssetLazyAsync("assets/heart.png");
   var size = 50 + Math.max(0, Math.min(value, 200));
   var fontSize = Math.round((size / 100) * 32);
 
