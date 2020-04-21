@@ -1,8 +1,9 @@
 import { Pool } from "pg";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { Canvas } from "canvas-constructor";
 import axios from "axios";
 import { loadAssetLazyAsync } from "../asset-map";
+import { RuntimeError } from "../runtime-error";
 
 const MIKI_CDN_URL = "https://cdn.miki.ai/";
 const DISCORD_CDN_URL = "https://cdn.discordapp.com/";
@@ -59,25 +60,33 @@ function getUserAvatar(id: string, hash: Optional<string>) {
   return `${DISCORD_CDN_URL}avatars/${id}/${hash}.png`;
 }
 
-export const ship = async (req: Request, res: Response) => {
+export const ship = async (req: Request, res: Response, next: NextFunction) => {
   let me = req.query.me;
   let other = req.query.other;
-  let value = req.query.value;
+  let value = req.query.value || 0;
   let myHash = req.query.me_hash;
   let otherHash = req.query.other_hash;
 
   let avatarUrl = getUserAvatar(me, myHash);
   let avatarUrlOther = getUserAvatar(other, otherHash);
 
-  var avatarMe = await axios.get(avatarUrl, {
-    responseType: "arraybuffer",
-  });
+  let avatarMe = null;
+  let avatarOther = null;
 
-  let avatarOther = avatarMe;
-  if (avatarUrlOther != avatarUrl) {
-    avatarOther = await axios.get(avatarUrlOther, {
+  try {
+    avatarMe = await axios.get(avatarUrl, {
       responseType: "arraybuffer",
     });
+
+    if (avatarUrlOther != avatarUrl) {
+      avatarOther = await axios.get(avatarUrlOther, {
+        responseType: "arraybuffer",
+      });
+    } else {
+      avatarOther = avatarMe;
+    }
+  } catch (ex) {
+    return next(new RuntimeError(ex.toString(), "could not load avatars"));
   }
 
   let heart = await loadAssetLazyAsync("assets/heart.png");
@@ -103,46 +112,56 @@ export const ship = async (req: Request, res: Response) => {
     .setAntialiasing("subpixel");
 
   res.set("Content-Type", "image/png");
-  res.send(canvas.toBuffer());
+  res.end(canvas.toBuffer());
 };
 
-export const user = async (req: Request, res: Response) => {
+export const user = async (req: Request, res: Response, next: NextFunction) => {
   var id = req.query.id;
   let hash = req.query.hash;
 
-  var r = await pool.query(
-    `select v."BackgroundColor" as backcolor, 
+  try {
+    var r = await pool.query(
+      `select v."BackgroundColor" as backcolor, 
         v."ForegroundColor" as forecolor, 
         v."BackgroundId" as background, 
         u."Total_Experience" as experience, 
         u."Name" as name, 
         (select "Rank" from dbo."mview_glob_rank_exp" where "Id" = $1) as rank 
         from dbo."Users" as u left join dbo."ProfileVisuals" v on u."Id" = v."UserId" where u."Id" = $1;`,
-    [id]
-  );
+      [id]
+    );
+  } catch (ex) {
+    return next(new RuntimeError(ex.toString()));
+  }
 
-  if (r != null) {
-    var user = r.rows[0];
+  if (r == null) {
+    return next(
+      new RuntimeError("user query returned null.", "user not found", 404)
+    );
+  }
 
-    var url = `${MIKI_CDN_URL}image-profiles/backgrounds/background-${
-      user.background || 0
-    }.png`;
-    let avatarUrl = getUserAvatar(id, hash);
+  let user = r.rows[0];
 
-    var frontColor = user.forecolor || "#000000";
-    var backColor = user.backcolor || "#000000";
+  let url = `${MIKI_CDN_URL}image-profiles/backgrounds/background-${
+    user.background || 0
+  }.png`;
+  let avatarUrl = getUserAvatar(id, hash);
 
-    if (!frontColor.startsWith("#")) {
-      frontColor = "#" + frontColor;
-    }
+  let frontColor = user.forecolor || "#000000";
+  let backColor = user.backcolor || "#000000";
 
-    if (!backColor.startsWith("#")) {
-      backColor = "#" + backColor;
-    }
+  if (!frontColor.startsWith("#")) {
+    frontColor = "#" + frontColor;
+  }
 
-    var level = CalculateLevel(user.experience);
-    var expNextLevel = CalculateExp(level + 1);
+  if (!backColor.startsWith("#")) {
+    backColor = "#" + backColor;
+  }
 
+  var level = CalculateLevel(user.experience);
+  var expNextLevel = CalculateExp(level + 1);
+
+  try {
     var background = await axios.get(url, {
       responseType: "arraybuffer",
     });
@@ -150,42 +169,37 @@ export const user = async (req: Request, res: Response) => {
     var avatar = await axios.get(avatarUrl, {
       responseType: "arraybuffer",
     });
-
-    // ts-ignore can be removed with https://github.com/kyranet/canvasConstructor/pull/345
-    // @ts-ignore
-    var canvas = new Canvas(512, 256, "png")
-      .addImage(background.data, 0, 0, 512, 256)
-      .setColor(backColor + "20")
-      .addRect(0, 124, 512, 50)
-      .addRect(15, 216, 512 - 30, 25)
-      .setColor(frontColor + "60")
-      .addRect(18, 219, (user.experience / expNextLevel) * 476, 19)
-      .setTextFont("48px Arial")
-      .setColor(frontColor + "FF")
-      .addText(user.name, 15, 166, 512)
-      .setTextAlign("left")
-      .setTextFont("32px Arial")
-      .addText("LV", 15, 216)
-      .setTextFont("42px Roboto")
-      .addText(level.toString(), 60, 216)
-      .setTextAlign("right")
-      .setTextFont("32px Arial")
-      .addText("#", 512 - 15, 216)
-      .setTextFont("42px Roboto")
-      .addText(user.rank, 512 - 35, 216)
-      .setTextFont("20px Roboto")
-      .setTextAlign("center")
-      .addText(user.experience + "/" + expNextLevel, 256, 236)
-      .addRoundImage(avatar.data, 10, 10, 100, 100, 50);
-
-    res.set("Content-Type", "image/png");
-    res.end(canvas.toBuffer());
-    return;
-  } else {
-    res.end(
-      JSON.stringify({
-        error: "User not found!",
-      })
-    );
+  } catch (ex) {
+    return next(new RuntimeError(ex.toString(), "could not load avatars"));
   }
+
+  // ts-ignore can be removed with https://github.com/kyranet/canvasConstructor/pull/345
+  // @ts-ignore
+  var canvas = new Canvas(512, 256, "png")
+    .addImage(background.data, 0, 0, 512, 256)
+    .setColor(backColor + "20")
+    .addRect(0, 124, 512, 50)
+    .addRect(15, 216, 512 - 30, 25)
+    .setColor(frontColor + "60")
+    .addRect(18, 219, (user.experience / expNextLevel) * 476, 19)
+    .setTextFont("48px Arial")
+    .setColor(frontColor + "FF")
+    .addText(user.name, 15, 166, 512)
+    .setTextAlign("left")
+    .setTextFont("32px Arial")
+    .addText("LV", 15, 216)
+    .setTextFont("42px Roboto")
+    .addText(level.toString(), 60, 216)
+    .setTextAlign("right")
+    .setTextFont("32px Arial")
+    .addText("#", 512 - 15, 216)
+    .setTextFont("42px Roboto")
+    .addText(user.rank, 512 - 35, 216)
+    .setTextFont("20px Roboto")
+    .setTextAlign("center")
+    .addText(user.experience + "/" + expNextLevel, 256, 236)
+    .addRoundImage(avatar.data, 10, 10, 100, 100, 50);
+
+  res.set("Content-Type", "image/png");
+  return res.status(200).end(canvas.toBuffer());
 };

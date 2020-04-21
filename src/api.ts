@@ -1,12 +1,23 @@
+import * as Sentry from "@sentry/node";
 import express from "express";
 const app = express();
 import * as bodyParser from "body-parser";
 import * as dotenv from "dotenv";
-dotenv.config();
 
 import * as imageRouter from "./routes/images.router";
 import * as userRouter from "./routes/users.router";
+import { RuntimeError } from "./runtime-error";
 
+dotenv.config();
+
+Sentry.init({ dsn: process.env.SENTRY_DSN });
+
+app.use(
+  Sentry.Handlers.requestHandler({
+    request: ["headers", "method", "query_string", "url"],
+    transaction: "methodPath",
+  })
+);
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -26,6 +37,16 @@ app.get("/yugioh", imageRouter.yugioh);
 app.get("/disability", imageRouter.disability);
 app.get("/tohru", imageRouter.tohru);
 app.get("/yagami", imageRouter.yagami);
+
+app.use(Sentry.Handlers.errorHandler());
+
+app.use((err: RuntimeError, req, res, next) => {
+  res.statusCode = err.getStatusCode();
+  res.send({
+    error: err.getPublicMessage(),
+    request_id: res.sentry,
+  });
+});
 
 app.listen(process.env.API_PORT, () =>
   console.log(`Running on port: ${process.env.API_PORT}`)
