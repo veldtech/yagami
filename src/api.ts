@@ -3,12 +3,11 @@ import express from "express";
 const app = express();
 import * as bodyParser from "body-parser";
 import * as dotenv from "dotenv";
+import { RuntimeError } from "./runtime-error";
+dotenv.config();
 
 import * as imageRouter from "./routes/images.router";
 import * as userRouter from "./routes/users.router";
-import { RuntimeError } from "./runtime-error";
-
-dotenv.config();
 
 Sentry.init({ dsn: process.env.SENTRY_DSN });
 
