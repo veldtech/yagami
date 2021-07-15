@@ -40,7 +40,7 @@ function testWhite(x: string) {
   return white.test(x.charAt(0));
 }
 
-export const box = async function (req: Request, res: Response) {
+export const box = async (req: Request, res: Response) => {
   try {
 
     const url: string = req.query.url;
@@ -73,11 +73,11 @@ export const box = async function (req: Request, res: Response) {
     res.send(canvas.toBuffer());
 
   } catch (error) {
-    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+    res.json({status: 500, message: error.toString() });
   }
 };
 
-export const yugioh = async function (req: Request, res: Response) {
+export const yugioh = async (req: Request, res: Response) => {
   try {
     let url = req.query.url;
     // @ts-ignore
@@ -106,7 +106,7 @@ export const yugioh = async function (req: Request, res: Response) {
   }
 };
 
-export const disability = async function (req: Request, res: Response) {
+export const disability = async (req: Request, res: Response) => {
   try {
     let url = req.query.url;
     // @ts-ignore
@@ -127,7 +127,7 @@ export const disability = async function (req: Request, res: Response) {
   }
 };
 
-export const tohru = async function (req: Request, res: Response) {
+export const tohru = async (req: Request, res: Response) => {
   try {
 
     // @ts-ignore
@@ -158,7 +158,7 @@ export const tohru = async function (req: Request, res: Response) {
   }
 };
 
-export const yagami = async function (req: Request, res: Response) {
+export const yagami = async (req: Request, res: Response) => {
   try {
     let text = req.query.text;
     let wrappedText = wordWrap(text, 15);
