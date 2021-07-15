@@ -1,6 +1,11 @@
 import { Request, Response } from "express";
-import gm from "gm";
-import request from "request";
+import { Canvas } from "canvas-constructor";
+import axios from "axios";
+import {loadAssetLazyAsync} from "../asset-map";
+
+
+Canvas.registerFont("./assets/fonts/Felt Regular.ttf", {family: "Roboto"});
+Canvas.registerFont("./assets/fonts/Little Days.ttf", {family: "Arial"});
 
 function wordWrap(str: string, maxWidth: number) {
   let newLineStr = "\n";
@@ -37,32 +42,36 @@ function testWhite(x: string) {
 
 export const box = async function (req: Request, res: Response) {
   try {
+
     const url: string = req.query.url;
+    let text = req.query.text;
+    let wrappedText = wordWrap(text, 15);
 
-    var text = req.query.text;
-    var wrappedText = wordWrap(text, 15);
+    // @ts-ignore
+    let avatarCanvas = new Canvas(256, 256, "png") // AvatarCanvas for manipulation (Probably a better way to do this)
+    // @ts-ignore
+    let canvas = new Canvas(600, 399, "png") // Base Canvas
+    let avImage = await axios.get(url, {responseType: "arraybuffer"}) // AvatarImage Grab
+    let box = await loadAssetLazyAsync("assets/box.png"); // Load Image into Cache if not Loaded
 
-    //@ts-ignore
-    var image = gm(request(url))
-      .resize(190, 190, "!")
-      .rotate("black", 28)
-      .extent(600, 399)
-      .roll(350, 100);
+    // Avatar Rotate 22, Grab center of Canvas for Rotation, "Rotate" around that point, then move Image to center
+    avatarCanvas
+        .translate( 128, 128 )
+        .rotate(22 * Math.PI / 180)
+        .translate( -128, -128)
+        .addImage(avImage.data, 0, 0);
 
-    image.draw('image over 0,0 0,0 "./assets/box.png"');
+    // Add Rotated Avatar to canvas, add box, add centered wrapped text.
+    canvas
+        .addImage(avatarCanvas.toBuffer(), 378, 132, 200,200)
+        .addImage(box, 0, 0)
+        .setTextFont('24px Roboto')
+        .setTextAlign('center')
+        .addMultilineText(wrappedText, 95, 275);
 
-    image
-      .font("./assets/fonts/Felt Regular.ttf", 24)
-      .drawText(50, 275, wrappedText);
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
 
-    image.toBuffer("PNG", function (err, buffer) {
-      if (err) {
-        res.send(err.toString());
-      } else {
-        res.set("Content-Type", "image/png");
-        res.send(buffer);
-      }
-    });
   } catch (error) {
     res.send(JSON.stringify({ status: 500, message: error.toString() }));
   }
@@ -70,25 +79,28 @@ export const box = async function (req: Request, res: Response) {
 
 export const yugioh = async function (req: Request, res: Response) {
   try {
-    var url = req.query.url;
+    let url = req.query.url;
+    // @ts-ignore
+    let avatarCanvas = new Canvas(265, 265, "png");
+    // @ts-ignore
+    let canvas = new Canvas(480, 768, "png");
+    let avImage = await axios.get(url, {responseType: "arraybuffer"});
+    let cardImg = await loadAssetLazyAsync("./assets/heartofthecard.png");
 
-    //@ts-ignore
-    var image = gm(request(url))
-      .rotate("white", -10)
-      .coalesce()
-      .resize(280, 280, "!")
-      .extent(480, 768, "-5+25");
+    // Same Concept original comments in Box function
+    avatarCanvas
+        .translate( 128, 128 )
+        .rotate(-10 * Math.PI / 180)
+        .translate( -128, -128)
+        .addImage(avImage.data, 0, 0);
 
-    image.draw('image over 0,0 0,0 "./assets/heartofthecard.png"');
+    canvas
+        .addImage(avatarCanvas.toBuffer(), 26, 0, 265,265)
+        .addImage(cardImg, 0, 0)
 
-    image.toBuffer("PNG", function (err, buffer) {
-      if (err) {
-        res.send(err.toString());
-      } else {
-        res.set("Content-Type", "image/png");
-        res.send(buffer);
-      }
-    });
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
+
   } catch (error) {
     res.send(JSON.stringify({ status: 500, message: error.toString() }));
   }
@@ -96,79 +108,74 @@ export const yugioh = async function (req: Request, res: Response) {
 
 export const disability = async function (req: Request, res: Response) {
   try {
-    var url: string = req.query.url;
+    let url = req.query.url;
+    // @ts-ignore
+    let canvas = new Canvas(467, 397, "png");
+    let avImage = await axios.get(url, {responseType: "arraybuffer"});
+    let disabilityImg = await loadAssetLazyAsync("./assets/disability.png");
 
-    //@ts-ignore
-    var image = gm(request(url))
-      .coalesce()
-      .resize(100, 100, "!")
-      .extent(467, 397, "-320-180");
+    // No need for Avatar Manipulation, resize and place
+    canvas
+        .addImage(avImage.data, 320, 159, 126,126)
+        .addImage(disabilityImg, 0, 0)
 
-    image.draw('image over 0,0 0,0 "./assets/disability.png"');
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
 
-    image.toBuffer("PNG", function (err, buffer) {
-      if (err) {
-        res.send(err.toString());
-      } else {
-        res.set("Content-Type", "image/png");
-        res.send(buffer);
-      }
-    });
   } catch (error) {
     res.send(JSON.stringify({ status: 500, message: error.toString() }));
   }
 };
 
-export const tohru = function (req: Request, res: Response) {
+export const tohru = async function (req: Request, res: Response) {
   try {
-    var text = req.query.text;
-    var wrappedText = wordWrap(text, 8);
 
-    var image = gm(505, 560, "white");
+    // @ts-ignore
+    let text = req.query.text;
+    let wrappedText = wordWrap(text, 8);
 
-    image
-      .region(400, 400, 150, 100)
-      .gravity("Center")
-      .fontSize(48)
-      .font("./assets/fonts/Little Days.ttf")
-      .drawText(0, 0, wrappedText)
-      .rotate("transparent", -5);
+    // @ts-ignore
+    let canvas = new Canvas(505, 560, "png");
+    let tohruImg = await loadAssetLazyAsync("./assets/tohru.png");
 
-    image.region(505, 560).draw('image over 0,0 0,0 "./assets/tohru.png"');
+    // Create white rectangle, fill whole canvas, add image rotate text and place.
+    canvas
+        .setColor("white")
+        .addRect(0,0, 505, 560)
+        .addImage(tohruImg, 0, 0)
+        .rotate(-5 * Math.PI / 180)
+        .setTextAlign("center")
+        .setColor("black")
+        .setTextFont('48px Arial')
+        .addMultilineText(wrappedText, 300,280);
 
-    image.toBuffer("PNG", function (err, buffer) {
-      if (err) {
-        res.send(err.toString());
-      } else {
-        res.set("Content-Type", "image/png");
-        res.send(buffer);
-      }
-    });
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
+
+
   } catch (error) {
-    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+    res.send(JSON.stringify({status: 500, message: error.toString()}));
   }
 };
 
-export const yagami = function (req: Request, res: Response) {
+export const yagami = async function (req: Request, res: Response) {
   try {
-    var text = req.query.text;
-    var wrappedText = wordWrap(text, 15);
+    let text = req.query.text;
+    let wrappedText = wordWrap(text, 15);
 
-    var image = gm("./assets/source-image.png");
+    // @ts-ignore
+    let canvas = new Canvas(529, 389, "png");
+    let yagamiImg = await loadAssetLazyAsync("./assets/source-image.png");
 
-    image
-      .font("./assets/fonts/Felt Regular.ttf", 32)
-      .drawText(10, 200, wrappedText);
+    canvas
+        .addImage(yagamiImg, 0, 0)
+        .setTextFont("32px Arial")
+        .addText(wrappedText, 10, 200)
 
-    image.toBuffer("PNG", function (err, buffer) {
-      if (err) {
-        res.send(err.toString());
-      } else {
-        res.set("Content-Type", "image/png");
-        res.send(buffer);
-      }
-    });
+    res.set("Content-Type", "image/png");
+    res.send(canvas.toBuffer());
+
   } catch (error) {
-    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+    res.send(JSON.stringify({status: 500, message: error.toString()}));
   }
 };
