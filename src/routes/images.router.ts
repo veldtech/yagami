@@ -102,7 +102,7 @@ export const yugioh = async (req: Request, res: Response) => {
     res.send(canvas.toBuffer());
 
   } catch (error) {
-    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+    res.json({status: 500, message: error.toString() });
   }
 };
 
@@ -123,7 +123,7 @@ export const disability = async (req: Request, res: Response) => {
     res.send(canvas.toBuffer());
 
   } catch (error) {
-    res.send(JSON.stringify({ status: 500, message: error.toString() }));
+    res.json({status: 500, message: error.toString() });
   }
 };
 
@@ -154,7 +154,7 @@ export const tohru = async (req: Request, res: Response) => {
 
 
   } catch (error) {
-    res.send(JSON.stringify({status: 500, message: error.toString()}));
+    res.json({status: 500, message: error.toString() });
   }
 };
 
@@ -176,6 +176,6 @@ export const yagami = async (req: Request, res: Response) => {
     res.send(canvas.toBuffer());
 
   } catch (error) {
-    res.send(JSON.stringify({status: 500, message: error.toString()}));
+    res.json({status: 500, message: error.toString() });
   }
 };
