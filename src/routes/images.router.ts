@@ -59,7 +59,7 @@ export const box = async (req: Request, res: Response) => {
         .translate( 128, 128 )
         .rotate(22 * Math.PI / 180)
         .translate( -128, -128)
-        .addImage(avImage.data, 0, 0);
+        .addImage(avImage.data, 0, 0, 256, 256);
 
     // Add Rotated Avatar to canvas, add box, add centered wrapped text.
     canvas
@@ -92,7 +92,7 @@ export const yugioh = async (req: Request, res: Response) => {
         .translate( 128, 128 )
         .rotate(-10 * Math.PI / 180)
         .translate( -128, -128)
-        .addImage(avImage.data, 0, 0);
+        .addImage(avImage.data, 0, 0, 256, 256);
 
     canvas
         .addImage(avatarCanvas.toBuffer(), 26, 0, 265,265)
