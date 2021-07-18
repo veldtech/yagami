@@ -31,6 +31,6 @@ jobs:
           imagepullsecrets: |
             github-pull-secret
           manifests: |
-            .kube/manifests/deployment.yml
-            .kube/manifests/service.yml
+            .kube/deployment.yml
+            .kube/service.yml
           images: docker.pkg.github.com/mikibot/yagami/yagami:${{ github.run_id }}
