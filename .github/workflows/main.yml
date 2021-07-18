@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: Azure/k8s-set-context@v1
         with:
-          kubeconfig: ${{ secrets.KUBECONFIG_HETZNER }}
+          kubeconfig: ${{ secrets.KUBECONFIG }}
       - name: Deploy to Kubernetes cluster
         uses: Azure/k8s-deploy@v1.2
         with:
