@@ -24,7 +24,6 @@ jobs:
       - uses: Azure/k8s-set-context@v1
         with:
           kubeconfig: ${{ secrets.KUBECONFIG }}
-      - name: login
       - uses: Azure/k8s-create-secret@v1
         with:
           container-registry-url: docker.pkg.github.com
