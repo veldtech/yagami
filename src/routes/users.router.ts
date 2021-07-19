@@ -5,7 +5,7 @@ import axios from "axios";
 import { loadAssetLazyAsync } from "../asset-map";
 import { RuntimeError } from "../runtime-error";
 
-const MIKI_CDN_URL = "https://cdn.miki.ai/";
+const MIKI_CDN_URL = "https://cdn.miki.bot/";
 const DISCORD_CDN_URL = "https://cdn.discordapp.com/";
 
 const pool = new Pool({
