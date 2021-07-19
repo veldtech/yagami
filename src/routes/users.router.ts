@@ -105,7 +105,7 @@ export const ship = async (req: Request, res: Response, next: NextFunction) => {
       size,
       size
     )
-    .setTextFont(fontSize.toString() + "px Arial")
+    .setTextFont("bolder " + fontSize.toString() + "px Arial")
     .setColor("#FFFFFF")
     .setTextAlign("center")
     .addText(value + "%", 256, 128 + 10)
@@ -186,7 +186,7 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
     .setColor(frontColor + "FF")
     .addText(user.name, 15, 166, 512)
     .setTextAlign("left")
-    .setTextFont("32px Arial")
+    .setTextFont("bold 32px Arial")
     .addText("LV", 15, 216)
     .setTextFont("42px Roboto")
     .addText(level.toString(), 60, 216)
