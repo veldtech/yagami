@@ -4,8 +4,8 @@ import axios from "axios";
 import {loadAssetLazyAsync} from "../asset-map";
 
 
-Canvas.registerFont("./assets/fonts/Felt Regular.ttf", {family: "Roboto"});
-Canvas.registerFont("./assets/fonts/Little Days.ttf", {family: "Arial"});
+Canvas.registerFont("./assets/fonts/Felt Regular.ttf", {family: "Felt"});
+Canvas.registerFont("./assets/fonts/Little Days.ttf", {family: "Little Days Alt"});
 
 function wordWrap(str: string, maxWidth: number) {
   let newLineStr = "\n";
@@ -65,7 +65,7 @@ export const box = async (req: Request, res: Response) => {
     canvas
         .addImage(avatarCanvas.toBuffer(), 378, 132, 200,200)
         .addImage(box, 0, 0)
-        .setTextFont('24px Roboto')
+        .setTextFont('24px Felt')
         .setTextAlign('center')
         .addMultilineText(wrappedText, 95, 275);
 
@@ -146,7 +146,7 @@ export const tohru = async (req: Request, res: Response) => {
         .rotate(-5 * Math.PI / 180)
         .setTextAlign("center")
         .setColor("black")
-        .setTextFont('48px Arial')
+        .setTextFont('48px Little Days Alt')
         .addMultilineText(wrappedText, 300,280);
 
     res.set("Content-Type", "image/png");
@@ -169,7 +169,7 @@ export const yagami = async (req: Request, res: Response) => {
 
     canvas
         .addImage(yagamiImg, 0, 0)
-        .setTextFont("32px Arial")
+        .setTextFont("32px Little Days Alt")
         .addText(wrappedText, 10, 200)
 
     res.set("Content-Type", "image/png");

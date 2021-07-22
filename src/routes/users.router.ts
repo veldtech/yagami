@@ -17,12 +17,12 @@ const pool = new Pool({
 });
 
 Canvas.registerFont("./assets/fonts/ARLRDBD.TTF", {
-  family: "Arial",
+  family: "Arial Rounded MT Bold",
   weight: "bold",
 });
 
 Canvas.registerFont("./assets/fonts/YuGothL.ttc", {
-  family: "Roboto",
+  family: "Yu Gothic Light",
   weight: "light",
 });
 
@@ -105,7 +105,7 @@ export const ship = async (req: Request, res: Response, next: NextFunction) => {
       size,
       size
     )
-    .setTextFont("bolder " + fontSize.toString() + "px Arial")
+    .setTextFont("bold " + fontSize.toString() + "px Arial Rounded MT Bold")
     .setColor("#FFFFFF")
     .setTextAlign("center")
     .addText(value + "%", 256, 128 + 10)
@@ -182,20 +182,20 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
     .addRect(15, 216, 512 - 30, 25)
     .setColor(frontColor + "60")
     .addRect(18, 219, (user.experience / expNextLevel) * 476, 19)
-    .setTextFont("48px Arial")
+    .setTextFont("48px Arial Rounded MT Bold")
     .setColor(frontColor + "FF")
     .addText(user.name, 15, 166, 512)
     .setTextAlign("left")
-    .setTextFont("bold 32px Arial")
+    .setTextFont("bold 32px Arial Rounded MT Bold")
     .addText("LV", 15, 216)
-    .setTextFont("42px Roboto")
+    .setTextFont("42px Yu Gothic Light")
     .addText(level.toString(), 60, 216)
     .setTextAlign("right")
     .setTextFont("32px Arial")
     .addText("#", 512 - 15, 216)
-    .setTextFont("42px Roboto")
+    .setTextFont("42px Yu Gothic Light")
     .addText(user.rank, 512 - 35, 216)
-    .setTextFont("20px Roboto")
+    .setTextFont("20px Yu Gothic Light")
     .setTextAlign("center")
     .addText(user.experience + "/" + expNextLevel, 256, 236)
     .addRoundImage(avatar.data, 10, 10, 100, 100, 50);
