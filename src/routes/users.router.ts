@@ -44,12 +44,7 @@ function CalculateLevel(exp: number) {
  * Calculates Miki experience from level
  */
 function CalculateExp(level: number) {
-  var Level = 0;
-  var output = 0;
-  do {
-    output = 10 + (output + Level * 20);
-    Level++;
-  } while (Level < level);
+  var output = level * level * 20
   return output;
 }
 
