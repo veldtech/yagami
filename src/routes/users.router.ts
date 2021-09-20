@@ -45,11 +45,7 @@ function CalculateLevel(exp: number) {
  */
 function CalculateExp(level: number) {
   var Level = 0;
-  var output = 0;
-  do {
-    output = 10 + (output + Level * 20);
-    Level++;
-  } while (Level < level);
+  var output = Level * Level * 10 ;
   return output;
 }
 
