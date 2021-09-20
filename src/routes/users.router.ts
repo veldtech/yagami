@@ -160,7 +160,7 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   var level = CalculateLevel(user.experience);
-  var expNextLevel = CalculateExp(level));
+  var expNextLevel = CalculateExp(level);
 
   try {
     var background = await axios.get(url, {
