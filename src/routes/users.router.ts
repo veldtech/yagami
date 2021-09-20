@@ -44,7 +44,13 @@ function CalculateLevel(exp: number) {
  * Calculates Miki experience from level
  */
 function CalculateExp(level: number) {
-  var output = level * level * 10;
+  var Level = 0
+  var output = 0;
+  do {
+    output = 10 + (output + Level * 20);
+    Level++;
+  } while (Level < level);
+  var output = Level * Level * 10 ;
   return output;
 }
 
@@ -154,7 +160,7 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   var level = CalculateLevel(user.experience);
-  var expNextLevel = CalculateExp(CalculateLevel(user.experience));
+  var expNextLevel = CalculateExp(level));
 
   try {
     var background = await axios.get(url, {
