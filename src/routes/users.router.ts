@@ -16,6 +16,8 @@ const pool = new Pool({
   port: Number(process.env.DATABASE_PORT),
 });
 
+registerFont("Arial Rounded MT Bold", "./assets/fonts/ARLRDBD.TTF");
+
 registerFont("Satoshi", "./assets/fonts/Satoshi-Regular.ttf");
 registerFont("SatoshiBold", "./assets/fonts/Satoshi-Bold.ttf");
 
@@ -76,7 +78,9 @@ export const ship = async (req: Request, res: Response, next: NextFunction) => {
     return next(new RuntimeError(ex.toString(), "could not load avatars"));
   }
 
-  let heart = await resolveImage(await loadAssetLazyAsync("assets/heart.png"));
+  let heart = await resolveImage(
+    await loadAssetLazyAsync("./assets/heart.png")
+  );
   var size = 50 + Math.max(0, Math.min(value, 200));
   var fontSize = Math.round((size / 100) * 32);
 
@@ -90,13 +94,14 @@ export const ship = async (req: Request, res: Response, next: NextFunction) => {
       size,
       size
     )
-    .setTextFont("bold " + fontSize.toString() + "px Arial Rounded MT Bold")
+    .setTextFont(fontSize.toString() + "px Arial Rounded MT Bold")
     .setColor("#FFFFFF")
     .setTextAlign("center")
     .printText(value + "%", 256, 128 + 10);
 
-  res.set("Content-Type", "image/png");
-  res.end(canvas.toBuffer("png"));
+  const buffer = await canvas.toBuffer("png");
+
+  res.set("Content-Type", "image/png").end(buffer);
 };
 
 export const user = async (req: Request, res: Response, next: NextFunction) => {
