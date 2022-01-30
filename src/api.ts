@@ -39,14 +39,20 @@ app.get("/yagami", imageRouter.yagami);
 
 app.use(Sentry.Handlers.errorHandler());
 
-app.use((err: RuntimeError, req, res, next) => {
-  res.statusCode = err.getStatusCode();
+app.use((err: Error, req, res, next) => {
+  console.error(err);
+  if (err instanceof RuntimeError) {
+    res.statusCode = err.getStatusCode();
+  }
   res.send({
-    error: err.getPublicMessage(),
+    error:
+      err instanceof RuntimeError
+        ? err.getPublicMessage()
+        : "An unknown error occurred.",
     request_id: res.sentry,
   });
 });
 
-app.listen(process.env.API_PORT, () =>
-  console.log(`Running on port: ${process.env.API_PORT}`)
-);
+const port = process.env.API_PORT || 3001;
+
+app.listen(port, () => console.log(`Running on port: ${port}`));
