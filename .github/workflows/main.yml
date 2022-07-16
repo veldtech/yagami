@@ -9,13 +9,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Publish to GitHub Registry
-        uses: velddev/gp-docker-action@v0.3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          image-name: yagami
-          image-tag: ${{ github.run_id }}
-          dockerfile-path: Dockerfile
+          submodules: recursive
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Build and push Image
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: .
+          file: Dockerfile
+          tags: ghcr.io/veldtech/yagami:${{ github.run_id }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
   deploy:
     runs-on: ubuntu-latest
     needs: [build]
@@ -27,10 +48,10 @@ jobs:
       - name: Deploy to Kubernetes cluster
         uses: Azure/k8s-deploy@v1.2
         with:
-          namespace: yagami
+          namespace: partyverse
           imagepullsecrets: |
             github-pull-secret
           manifests: |
             .kube/deployment.yml
             .kube/service.yml
-          images: ghcr.io/veldtech/yagami/yagami:${{ github.run_id }}
+          images: ghcr.io/veldtech/partyverse-client-web:${{ github.run_id }}
