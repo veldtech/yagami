@@ -33,4 +33,4 @@ jobs:
           manifests: |
             .kube/deployment.yml
             .kube/service.yml
-          images: docker.pkg.github.com/mikibot/yagami/yagami:${{ github.run_id }}
+          images: ghcr.io/veldtech/yagami/yagami:${{ github.run_id }}
