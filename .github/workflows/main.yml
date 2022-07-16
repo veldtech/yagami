@@ -54,4 +54,4 @@ jobs:
           manifests: |
             .kube/deployment.yml
             .kube/service.yml
-          images: ghcr.io/veldtech/partyverse-client-web:${{ github.run_id }}
+          images: ghcr.io/veldtech/yagami:${{ github.run_id }}
