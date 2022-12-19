@@ -1,4 +1,3 @@
-import { Pool } from "pg";
 import { Request, Response, NextFunction } from "express";
 import { Canvas, registerFont, resolveImage } from "canvas-constructor/skia";
 import axios, { AxiosResponse } from "axios";
@@ -8,39 +7,11 @@ import { RuntimeError } from "../runtime-error";
 const MIKI_CDN_URL = "https://cdn.miki.bot/";
 const DISCORD_CDN_URL = "https://cdn.discordapp.com/";
 
-const pool = new Pool({
-  user: process.env.DATABASE_USER,
-  host: process.env.DATABASE_HOST,
-  database: process.env.DATABASE,
-  password: process.env.DATABASE_PASSWORD,
-  port: Number(process.env.DATABASE_PORT),
-});
-
 registerFont("Arial Rounded MT Bold", "./assets/fonts/ARLRDBD.TTF");
 
 registerFont("Satoshi", "./assets/fonts/Satoshi-Regular.ttf");
+registerFont("SatoshiMedium", "./assets/fonts/Satoshi-Medium.ttf");
 registerFont("SatoshiBold", "./assets/fonts/Satoshi-Bold.ttf");
-
-/**
- * Calculates Miki level from experience
- */
-function CalculateLevel(exp: number) {
-  var experience = exp;
-  var Level = 0;
-  var output = 0;
-  while (experience >= output) {
-    output = 10 + (output + Level * 20);
-    Level++;
-  }
-  return Level;
-}
-
-/**
- * Calculates Miki experience from level
- */
-function CalculateExp(level: number) {
-  return level * level * 10;
-}
 
 function getUserAvatar(id: string, hash: Optional<string>) {
   if (hash == null || hash == undefined || hash == "") {
@@ -105,39 +76,24 @@ export const ship = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 export const user = async (req: Request, res: Response, next: NextFunction) => {
-  var id = req.query.id;
-  let hash = req.query.hash;
-
-  try {
-    var result = await pool.query(
-      `select v."BackgroundColor" as backcolor, 
-        v."ForegroundColor" as forecolor, 
-        v."BackgroundId" as background, 
-        u."Total_Experience" as experience, 
-        u."Name" as name, 
-        (select "Rank" from dbo."mview_glob_rank_exp" where "Id" = $1) as rank 
-        from dbo."Users" as u left join dbo."ProfileVisuals" v on u."Id" = v."UserId" where u."Id" = $1;`,
-      [id]
-    );
-  } catch (ex) {
-    return next(new RuntimeError(ex.toString()));
-  }
-
-  if (!result || !result.rows.length) {
-    return next(
-      new RuntimeError("user query returned null.", "user not found", 404)
-    );
-  }
-
-  let user = result.rows[0];
+  const id = req.query.id;
+  const hash = req.query.hash;
+  const backgroundId = req.query.backgroundId;
+  const foregroundColor = req.query.foregroundColor;
+  const backgroundColor = req.query.backgroundColor;
+  const experience = req.query.experience;
+  const maxExperience = req.query.maxExperience;
+  const level = req.query.level;
+  const name = req.query.name;
+  const rank = req.query.rank;
 
   let url = `${MIKI_CDN_URL}image-profiles/backgrounds/background-${
-    user?.background ?? 2
+    backgroundId ?? 2
   }.png`;
   let avatarUrl = getUserAvatar(id, hash);
 
-  let frontColor = user.forecolor || "#E95882";
-  let backColor = user.backcolor || "#000000";
+  let frontColor = foregroundColor || "#E95882";
+  let backColor = backgroundColor || "#000000";
 
   if (!frontColor.startsWith("#")) {
     frontColor = "#" + frontColor;
@@ -146,9 +102,6 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
   if (!backColor.startsWith("#")) {
     backColor = "#" + backColor;
   }
-
-  var level = CalculateLevel(user.experience);
-  var expNextLevel = CalculateExp(level);
 
   let background: AxiosResponse<Buffer> = null;
   let avatar: AxiosResponse<Buffer> = null;
@@ -171,43 +124,46 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
 
   var backgroundImage = await resolveImage(background.data);
 
-  var canvas = new Canvas(512, 256)
+  const rankSize = new Canvas(512, 128)
+    .setTextFont("20px SatoshiBold")
+    .measureText(rank.toString());
+
+  const levelSize = new Canvas(512, 128)
+    .setTextFont("20px SatoshiBold")
+    .measureText(level.toString());
+
+  // pre-calculated from figma
+  const levelLabelSize = 47;
+  const rankLabelSize = 46;
+
+  const rankX = 512 - 26 - rankSize.width;
+  const rankLabelX = rankX - 4 - rankLabelSize;
+  const levelX = rankLabelX - 16 - levelSize.width;
+  const levelLabelX = levelX - 4 - levelLabelSize;
+
+  var canvas = new Canvas(512, 128)
     // Print background
-    .printImage(backgroundImage, 0, 0, 512, 256)
-    .setFilter("blur(4px)")
-    .printImage(backgroundImage, 0, 0, 341, 256, 0, 0, 341, 256)
-    .resetFilters()
+    .printRoundedImage(backgroundImage, 0, -64, 512, 256, 6)
     // Print blurry panel
-    .setColor("rgba(255, 255, 255, 0.2)")
-    .setFilter("blur(4)")
-    .printRectangle(0, 4, 341, 252)
-    .setFilter("none")
+    .setColor("rgba(0, 0, 0, 0.33)")
+    .printRoundedRectangle(11, 10, 491, 108, 8)
     // Print overhead exp bar
     .setColor("#FFFFFF3C")
-    .printRectangle(0, 0, 512, 4)
+    .printRoundedRectangle(128, 64, 358, 10, 999)
     .setColor(frontColor)
-    .printRectangle(0, 0, (user.experience / expNextLevel) * 512, 4)
+    .printRoundedRectangle(128, 64, (experience / maxExperience) * 358, 10, 999)
     // Print avatar part
-    .printCircularImage(await resolveImage(avatar.data), 44, 48, 28)
-    .setTextFont("bold 24px SatoshiBold")
+    .printCircularImage(await resolveImage(avatar.data), 69, 64, 42)
+    .setTextFont("28px SatoshiBold")
     .setColor(backColor)
-    .printText(user.name, 86, 56, 237)
-    // .setTextFont("16px Satoshi")
-    // .setColor("#00000099")
-    // .printText("Subtitle", 86, 68, 237)
-    // Print Stats Row
-    .setColor(backColor)
+    .printText(name, 128, 51, 358)
+    .setTextFont("20px SatoshiMedium")
+    .printText("Level", levelLabelX, 102)
+    .printText("Rank", rankLabelX, 102)
     .setTextFont("20px SatoshiBold")
-    .printText("Level", 16, 114)
-    .setTextFont("24px SatoshiBold")
     .setColor(frontColor + "FF")
-    .printText(level.toString(), 71, 114)
-    .setTextFont("20px SatoshiBold")
-    .setColor(backColor)
-    .printText("Rank", 102 + level.toString().length * 14, 114)
-    .setTextFont("24px SatoshiBold")
-    .setColor(frontColor + "FF")
-    .printText(user.rank, 156 + level.toString().length * 14, 114);
+    .printText(level.toString(), levelX, 102)
+    .printText(rank, rankX, 102);
 
   res.set("Content-Type", "image/png");
   return res.status(200).end(await canvas.toBuffer("png"));
