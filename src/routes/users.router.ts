@@ -87,9 +87,7 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
   const name = req.query.name;
   const rank = req.query.rank;
 
-  let url = `${MIKI_CDN_URL}image-profiles/backgrounds/background-${
-    backgroundId ?? 2
-  }.png`;
+  let url = `${MIKI_CDN_URL}backgrounds/background-${backgroundId ?? 2}.png`;
   let avatarUrl = getUserAvatar(id, hash);
 
   let frontColor = foregroundColor || "#E95882";
@@ -107,6 +105,7 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
   let avatar: AxiosResponse<Buffer> = null;
 
   try {
+    console.log({ url });
     background = await axios.get(url, {
       responseType: "arraybuffer",
     });
@@ -143,7 +142,14 @@ export const user = async (req: Request, res: Response, next: NextFunction) => {
 
   var canvas = new Canvas(512, 128)
     // Print background
-    .printRoundedImage(backgroundImage, 0, -64, 512, 256, 6)
+    .printRoundedImage(
+      backgroundImage,
+      0,
+      backgroundId > 38 ? 0 : -64,
+      512,
+      backgroundId > 38 ? 128 : 256,
+      6
+    )
     // Print blurry panel
     .setColor("rgba(0, 0, 0, 0.33)")
     .printRoundedRectangle(11, 10, 491, 108, 8)
