@@ -37,21 +37,3 @@ jobs:
           cache-to: type=gha,mode=max
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
-  deploy:
-    runs-on: ubuntu-latest
-    needs: [build]
-    steps:
-      - uses: actions/checkout@v2
-      - uses: Azure/k8s-set-context@v1
-        with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-      - name: Deploy to Kubernetes cluster
-        uses: Azure/k8s-deploy@v1.2
-        with:
-          namespace: yagami
-          imagepullsecrets: |
-            github-pull-secret
-          manifests: |
-            .kube/deployment.yml
-            .kube/service.yml
-          images: ghcr.io/veldtech/yagami/yagami:${{ github.run_id }}
