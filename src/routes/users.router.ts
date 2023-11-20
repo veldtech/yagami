@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from "axios";
 import { loadAssetLazyAsync } from "../asset-map";
 import { RuntimeError } from "../runtime-error";
 
-const MIKI_CDN_URL = "https://cdn.miki.bot/";
+const MIKI_CDN_URL = "https://cdn-v2.miki.bot/";
 const DISCORD_CDN_URL = "https://cdn.discordapp.com/";
 
 registerFont("Arial Rounded MT Bold", "./assets/fonts/ARLRDBD.TTF");
