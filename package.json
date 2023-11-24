@@ -18,7 +18,7 @@
     "canvas": "^2.6.0",
     "canvas-constructor": "^5.0.2",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "pg": "^8.7.1",
     "request": "^2.88.0",
     "skia-canvas": "^0.9.28"
